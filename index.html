@@ -724,6 +724,22 @@ table.rtbl tr:nth-child(odd) td{background:#f8f9fa}
     </div>
   </div>
 
+  <div class="storage-panel" id="storagePanel2">
+    <div class="sp-head" onclick="toggleSP('2')">
+      <h3>🗄️ นโยบายการจัดเก็บข้อมูลการประเมิน — ข้อมูลเก็บที่ไหน? ใครเข้าถึงได้? แก้ไขได้หรือไม่?</h3>
+      <span class="sp-tog" id="spTog2">▼</span>
+    </div>
+    <div class="sp-body" id="spBody2">
+      <div class="sp-grid">
+        <div class="sp-card blue"><div class="sp-title">📍 เก็บข้อมูลที่ไหน?</div><ul><li><strong>localStorage</strong> ของเบราว์เซอร์บนเครื่องผู้ใช้งานโดยตรง</li><li>ไม่มีเซิร์ฟเวอร์กลาง</li></ul></div>
+        <div class="sp-card green"><div class="sp-title">⏳ เก็บได้นานแค่ไหน?</div><ul><li>เก็บ<strong>ถาวร</strong> จนกว่าจะลบเอง</li><li>⚠️ ล้าง Cache → <strong>ข้อมูลหาย</strong> ควร Export JSON</li></ul></div>
+        <div class="sp-card yellow"><div class="sp-title">👤 ใครเข้าถึงได้?</div><ul><li><strong>เฉพาะผู้ใช้เครื่องนั้น</strong> เท่านั้น</li></ul></div>
+        <div class="sp-card red"><div class="sp-title">✏️ แก้ไขได้หรือไม่?</div><ul><li>โหลดกลับมา → <strong>แก้ไขได้</strong></li><li>View: <strong>read-only</strong></li></ul></div>
+      </div>
+      <div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:8px"><span class="sp-tag local">🔒 localStorage</span><span class="sp-tag export">📤 JSON Export</span><button onclick="calcStorageUsage('2')" style="padding:4px 12px;background:var(--pry);color:#fff;border:none;border-radius:6px;font-family:inherit;font-size:12px;cursor:pointer;margin-left:auto">🔄 อัปเดตพื้นที่</button></div>
+    </div>
+  </div>
+
   <!-- INFO CARD -->
   <div class="card">
     <div class="card-head">📋 ข้อมูลการประเมิน — มาตรฐานและการประเมินคุณภาพการบริการพยาบาลผู้ป่วยนอก</div>
@@ -1242,21 +1258,236 @@ table.rtbl tr:nth-child(odd) td{background:#f8f9fa}
 
 </div>
 <div id="m4" style="display:none">
-  <div class="cs-wrap">
-    <div class="status-badge status-soon">⏳ รอรับข้อมูลจากหนังสือเล่ม 4</div>
-    <div class="cs-ico">👶</div>
-    <h3>มาตรฐานและการประเมินคุณภาพการบริการพยาบาลผู้คลอด</h3>
-    <p class="cs-std">แบบประเมินสำหรับงานห้องคลอด ครอบคลุมการดูแลมารดาระยะคลอด การดูแลทารกแรกเกิด<br>ระบบการเฝ้าระวังภาวะแทรกซ้อน และความปลอดภัยของมารดาและทารก</p>
-    <div class="cs-book"><span class="bk-num">เล่ม 4</span><span>มาตรฐานและการประเมินคุณภาพ<br>การบริการพยาบาลผู้คลอด</span></div><br>
-    <div class="cs-info">
-      <p><strong>📚 หนังสืออ้างอิง :</strong> มาตรฐานและการประเมินคุณภาพการบริการพยาบาลผู้คลอด (เล่ม 4)</p>
-      <p><strong>🏥 หน่วยงานที่ใช้ :</strong> งานห้องคลอด โรงพยาบาลเขาสุกิม</p>
-      <p><strong>📋 โครงสร้างการประเมิน :</strong> มิติกระบวนการ (ADLI) + มิติผลลัพธ์ (Le/T/C/I) = 100 คะแนน</p>
-      <p><strong>📌 วิธีเพิ่มโมดูลนี้ :</strong> อัปโหลดหนังสือเล่ม 4 เพื่อให้นำข้อมูลแบบประเมินมาใส่ในโปรแกรม</p>
+
+  <!-- SAVE/LOAD BAR -->
+  <div class="sl-bar">
+    <span>💾 จัดการข้อมูลการประเมิน :</span>
+    <button class="sl-btn sl-save" onclick="openSaveModal('m4')">💾 บันทึกผลการประเมิน</button>
+    <button class="sl-btn sl-load" onclick="openLoadModal('m4')">📂 เรียกดู / โหลดข้อมูล</button>
+    <button class="sl-btn sl-import" onclick="openImportModal()">📥 นำเข้าไฟล์ JSON</button>
+    <div class="sl-auto"><span class="sl-dot"></span><span id="autoSaveStatus4">บันทึกอัตโนมัติทุกครั้งที่ตอบ</span></div>
+  </div>
+
+  <!-- BUTTONS -->
+  <div class="btn-row">
+    <button class="btn b-p" onclick="calcAll4()">🔢 คำนวณคะแนน</button>
+    <button class="btn b-g" onclick="window.print()">🖨️ พิมพ์แบบประเมิน</button>
+    <button class="btn b-o" onclick="exportCSV4()">📊 ส่งออก CSV</button>
+    <button class="btn b-r" onclick="resetAll4()">🔄 เริ่มใหม่</button>
+    <button class="btn b-w" onclick="document.getElementById('grandSection4').scrollIntoView({behavior:'smooth'})">📋 ดูสรุปผล</button>
+  </div>
+
+  <!-- STORAGE PANEL -->
+  <div class="storage-panel" id="storagePanel4">
+    <div class="sp-head" onclick="toggleSP('4')">
+      <h3>🗄️ นโยบายการจัดเก็บข้อมูลการประเมิน — ข้อมูลเก็บที่ไหน? ใครเข้าถึงได้? แก้ไขได้หรือไม่?</h3>
+      <span class="sp-tog" id="spTog4">▼</span>
+    </div>
+    <div class="sp-body" id="spBody4">
+      <div class="sp-grid">
+        <div class="sp-card blue"><div class="sp-title">📍 เก็บข้อมูลที่ไหน?</div><ul><li><strong>localStorage</strong> ของเบราว์เซอร์บนเครื่องผู้ใช้งานโดยตรง</li><li>ไม่มีเซิร์ฟเวอร์กลาง</li><li>ข้อมูลอยู่ใน <em>เบราว์เซอร์นั้น ๆ เท่านั้น</em></li></ul></div>
+        <div class="sp-card green"><div class="sp-title">⏳ เก็บได้นานแค่ไหน?</div><ul><li>เก็บ<strong>ถาวร</strong> จนกว่าจะลบเอง</li><li>ปิด-เปิดเบราว์เซอร์: <strong>ข้อมูลยังอยู่</strong></li><li>⚠️ ล้าง Cache → <strong>ข้อมูลหาย</strong> ควร Export JSON สำรอง</li></ul></div>
+        <div class="sp-card yellow"><div class="sp-title">👤 ใครเข้าถึงได้?</div><ul><li><strong>เฉพาะผู้ใช้เครื่องนั้น</strong> เท่านั้น</li><li>ไม่ส่งออกไปอินเทอร์เน็ต</li></ul></div>
+        <div class="sp-card red"><div class="sp-title">✏️ แก้ไขได้หรือไม่?</div><ul><li>โหลดกลับมา → <strong>แก้ไขได้</strong> → บันทึกใหม่</li><li>ดูผลเก่า (View): <strong>read-only</strong></li></ul></div>
+      </div>
+      <div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:8px"><span class="sp-tag local">🔒 localStorage</span><span class="sp-tag export">📤 JSON Export</span><button onclick="calcStorageUsage('4')" style="padding:4px 12px;background:var(--pry);color:#fff;border:none;border-radius:6px;font-family:inherit;font-size:12px;cursor:pointer;margin-left:auto">🔄 อัปเดตพื้นที่</button></div>
     </div>
   </div>
-</div>
 
+  <!-- INFO CARD -->
+  <div class="card">
+    <div class="card-head">📋 ข้อมูลการประเมิน — มาตรฐานและการประเมินคุณภาพการบริการพยาบาลผู้คลอด</div>
+    <div class="card-body">
+      <div class="info-grid">
+        <div><label class="f-lbl">วันที่ประเมิน</label><input class="f-inp" type="date" id="aDate4"></div>
+        <div><label class="f-lbl">ปีงบประมาณ</label><input class="f-inp" type="text" id="aYear4" value="2568"></div>
+        <div><label class="f-lbl">ชื่อผู้ประเมิน</label><input class="f-inp" type="text" id="aName4" placeholder="ชื่อ-สกุล"></div>
+        <div><label class="f-lbl">ตำแหน่ง</label><input class="f-inp" type="text" id="aPos4" value="พยาบาลวิชาชีพ / หัวหน้างาน LR"></div>
+        <div><label class="f-lbl">หน่วยงาน</label><input class="f-inp" type="text" id="aDept4" value="งานการพยาบาลผู้คลอด (ห้องคลอด) โรงพยาบาลเขาสุกิม"></div>
+        <div><label class="f-lbl">ประเภทการประเมิน</label>
+          <select class="f-sel" id="aType4">
+            <option>ประเมินภายใน (Self Assessment)</option>
+            <option>ทีมประกันคุณภาพโรงพยาบาล</option>
+            <option>ทีมประกันคุณภาพระดับจังหวัด</option>
+            <option>ประเมินภายนอก</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GUIDE CARD -->
+  <div class="guide-card">
+    <div class="guide-hd" onclick="tg('gBody4','gTog4')">
+      <h3>📖 คำอธิบายวิธีการให้คะแนนและเกณฑ์การประเมิน (คลิกเพื่อแสดง/ซ่อน)</h3>
+      <span class="gtog" id="gTog4">▼</span>
+    </div>
+    <div class="guide-bd" id="gBody4">
+      <div class="guide-tabs">
+        <button class="gtab active" onclick="showGCx('gc4_1',this,'m4')">มิติกระบวนการ (ADLI)</button>
+        <button class="gtab" onclick="showGCx('gc4_2',this,'m4')">มิติผลลัพธ์ (Le/T/C/I)</button>
+        <button class="gtab" onclick="showGCx('gc4_3',this,'m4')">วิธีคำนวณ LR</button>
+        <button class="gtab" onclick="showGCx('gc4_4',this,'m4')">การแปลผล</button>
+      </div>
+      <div id="gc4_1" class="gc show">
+        <p style="font-size:13px;color:#555;margin-bottom:10px">มิติกระบวนการประเมินด้วย 4 ข้อบ่งชี้ A, D, L, I — ให้คะแนน 0–5 แต่ละข้อ</p>
+        <table class="gtbl"><thead><tr><th>คะแนน</th><th>ระดับ</th><th>แนวทางการพิจารณา</th></tr></thead><tbody>
+          <tr><td><span class="sbg" style="background:var(--s0)">0</span></td><td>No Evidence</td><td>ไม่มีการดำเนินการ A, D, L, I / ไม่มีหลักฐาน</td></tr>
+          <tr><td><span class="sbg" style="background:var(--s1)">1</span></td><td>Beginning</td><td>มีการดำเนินการเป็นส่วนน้อย (น้อยกว่าครึ่งหนึ่ง)</td></tr>
+          <tr><td><span class="sbg" style="background:var(--s2)">2</span></td><td>Basically Effectiveness</td><td>มีการดำเนินการเป็นส่วนใหญ่ (มากกว่าครึ่งหนึ่ง)</td></tr>
+          <tr><td><span class="sbg" style="background:var(--s3)">3</span></td><td>Mature</td><td>มีการดำเนินการตามข้อกำหนดของมาตรฐานอย่างครบถ้วน</td></tr>
+          <tr><td><span class="sbg" style="background:var(--s4)">4</span></td><td>Advance</td><td>มีการดำเนินการอย่างเป็นระบบ เพิ่มมากกว่าข้อกำหนดของมาตรฐาน</td></tr>
+          <tr><td><span class="sbg" style="background:var(--s5)">5</span></td><td>Role Model</td><td>มีการดำเนินการเหนือมาตรฐาน เป็นแนวทางที่พิสูจน์ได้ว่านำสู่ความเป็นเลิศ</td></tr>
+        </tbody></table>
+        <p style="font-size:12px;color:#888;margin-top:8px"><b>A</b>=Approach &nbsp;|&nbsp; <b>D</b>=Deployment &nbsp;|&nbsp; <b>L</b>=Learning &nbsp;|&nbsp; <b>I</b>=Integration</p>
+      </div>
+      <div id="gc4_2" class="gc">
+        <table class="gtbl"><thead><tr><th>คะแนน</th><th>ระดับ</th><th>ร้อยละตัวชี้วัดที่แสดง Le, T, C, I ที่ดี</th></tr></thead><tbody>
+          <tr><td><span class="sbg" style="background:var(--s0)">0</span></td><td>No Evidence</td><td>ไม่มีรายงานข้อมูล/ตัวชี้วัดที่ดี</td></tr>
+          <tr><td><span class="sbg" style="background:var(--s1)">1</span></td><td>Beginning</td><td>ร้อยละ 1–20</td></tr>
+          <tr><td><span class="sbg" style="background:var(--s2)">2</span></td><td>Basically Effectiveness</td><td>ร้อยละ 21–40</td></tr>
+          <tr><td><span class="sbg" style="background:var(--s3)">3</span></td><td>Mature</td><td>ร้อยละ 41–60</td></tr>
+          <tr><td><span class="sbg" style="background:var(--s4)">4</span></td><td>Advance</td><td>ร้อยละ 61–80</td></tr>
+          <tr><td><span class="sbg" style="background:var(--s5)">5</span></td><td>Role Model</td><td>ร้อยละ 81–100</td></tr>
+        </tbody></table>
+        <p style="font-size:12px;color:#888;margin-top:8px"><b>Le</b>=Level &nbsp;|&nbsp; <b>T</b>=Trend &nbsp;|&nbsp; <b>C</b>=Comparison &nbsp;|&nbsp; <b>I</b>=Integration</p>
+      </div>
+      <div id="gc4_3" class="gc">
+        <div style="background:#fce4ec;border-radius:7px;padding:13px;font-size:13.5px">
+          <p>👶 <b>โครงสร้างคะแนน LR (เล่ม 4) รวม 160 คะแนน</b></p>
+          <ul style="margin:7px 0 0 18px;line-height:2;font-size:13px">
+            <li>ส่วนที่ 1 มิติกระบวนการบริหาร (14 ข้อ × 5) = <b>70 คะแนน</b></li>
+            <li>ส่วนที่ 2 มิติกระบวนการปฏิบัติ 3 ระยะ (12 ข้อ × 5) = <b>60 คะแนน</b></li>
+            <li>ส่วนที่ 3 มิติผลลัพธ์ (6 ข้อ × 5) = <b>30 คะแนน</b></li>
+            <li>คะแนนรายข้อ = <b>min( (A+D+L+I)÷4 , A )</b> หรือ <b>min( (Le+T+C+I)÷4 , Le )</b></li>
+            <li>ร้อยละ = (คะแนนรวม ÷ <b>160</b>) × 100</li>
+          </ul>
+        </div>
+      </div>
+      <div id="gc4_4" class="gc">
+        <table class="gtbl"><thead><tr><th>ร้อยละ</th><th>ระดับ</th><th>ลักษณะหน่วยงานบริการพยาบาล</th></tr></thead><tbody>
+          <tr><td>0–30</td><td><span class="lvc lv1">Beginning</span></td><td>เริ่มต้น กระบวนการยังไม่เป็นระบบ</td></tr>
+          <tr><td>30.01–40</td><td><span class="lvc lv2">Basically Effectiveness</span></td><td>แสดงประสิทธิผล ตอบสนองข้อกำหนดบางส่วน</td></tr>
+          <tr><td>40.01–50</td><td><span class="lvc lv3">Mature (ระดับ 1)</span></td><td>ตอบสนองข้อกำหนดมาตรฐานเป็นส่วนใหญ่</td></tr>
+          <tr><td>50.01–60</td><td><span class="lvc lv3">Mature (ระดับ 2)</span></td><td>ตอบสนองข้อกำหนดมาตรฐานอย่างครบถ้วน</td></tr>
+          <tr><td>60.01–70</td><td><span class="lvc lv4">Advanced (ระดับ 1)</span></td><td>ตอบสนองมาตรฐานครบถ้วน มีนวัตกรรม</td></tr>
+          <tr><td>70.01–80</td><td><span class="lvc lv4">Advanced (ระดับ 2)</span></td><td>ปฏิบัติตามมาตรฐานเป็นเลิศ บูรณาการ</td></tr>
+          <tr><td>80.01–90</td><td><span class="lvc lv5">Role Model (ระดับ 1)</span></td><td>แสดงการดำเนินการเหนือมาตรฐาน เป็นต้นแบบ</td></tr>
+          <tr><td>90.01–100</td><td><span class="lvc lv5">Role Model (ระดับ 2)</span></td><td>เหนือมาตรฐานอย่างโดดเด่น เป็นเลิศระดับชาติ</td></tr>
+        </tbody></table>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCORE NOTE -->
+  <div style="background:#fff8e1;border:1px solid #ffe082;border-radius:8px;padding:12px 18px;margin-bottom:16px;font-size:13.5px;color:#7d6608">
+    👶 <strong>โครงสร้างคะแนน LR :</strong> &nbsp;
+    ส่วนที่ 1 มิติกระบวนการบริหาร (<strong>70 คะแนน</strong>) &nbsp;+&nbsp;
+    ส่วนที่ 2 มิติกระบวนการปฏิบัติ 3 ระยะ (<strong>60 คะแนน</strong>) &nbsp;+&nbsp;
+    ส่วนที่ 3 มิติผลลัพธ์ (<strong>30 คะแนน</strong>) &nbsp;=&nbsp; รวม <strong>160 คะแนน</strong>
+  </div>
+
+  <!-- PART 1 -->
+  <div class="section-wrap">
+    <div class="sec-head proc">
+      <div class="sec-icon">⚙️</div>
+      <div>
+        <div style="font-size:15px;font-weight:700">ส่วนที่ 1 : แบบประเมินคุณภาพการบริหารการพยาบาลผู้คลอด — มิติกระบวนการ</div>
+        <div class="sec-meta">14 ข้อประเมิน × 5 คะแนน = 70 คะแนน &nbsp;|&nbsp; ข้อบ่งชี้ : A · D · L · I</div>
+      </div>
+    </div>
+    <div class="assess-wrap"><table class="at" id="p4Tbl">
+      <thead><tr>
+        <th class="th-num">ข้อ</th><th class="th-desc">รายการประเมินและข้อกำหนด</th><th class="th-crit">ข้อบ่งชี้</th>
+        <th class="th-sc">0<div class="sc-lbl">No Evid.</div></th><th class="th-sc">1<div class="sc-lbl">Begin.</div></th>
+        <th class="th-sc">2<div class="sc-lbl">Basic.</div></th><th class="th-sc">3<div class="sc-lbl">Mature</div></th>
+        <th class="th-sc">4<div class="sc-lbl">Adv.</div></th><th class="th-sc">5<div class="sc-lbl">Role M.</div></th>
+        <th class="th-tot">รวมคะแนน<br>รายข้อ</th>
+      </tr></thead>
+      <tbody id="p4Body"></tbody>
+    </table></div>
+    <div class="sec-total"><span>คะแนนรวมส่วนที่ 1 :</span>
+      <span class="tc tc-p"><span id="p4Total">0.00</span> / 70 &nbsp;(<span id="p4Pct">0.0</span>%)</span></div>
+  </div>
+
+  <!-- PART 2 -->
+  <div class="section-wrap">
+    <div class="sec-head" style="background:linear-gradient(135deg,#ad1457,#e91e63)">
+      <div class="sec-icon">👶</div>
+      <div>
+        <div style="font-size:15px;font-weight:700">ส่วนที่ 2 : แบบประเมินคุณภาพการปฏิบัติการพยาบาลผู้คลอด — มิติกระบวนการ</div>
+        <div class="sec-meta">3 ระยะ × 4 ข้อ = 12 ข้อ × 5 คะแนน = 60 คะแนน &nbsp;|&nbsp; ข้อบ่งชี้ : A · D · L · I</div>
+      </div>
+    </div>
+    <div class="assess-wrap"><table class="at" id="q4Tbl">
+      <thead><tr style="background:#fce4ec">
+        <th class="th-num" style="background:#fce4ec;color:#ad1457">ข้อ</th>
+        <th class="th-desc" style="background:#fce4ec;color:#ad1457;text-align:left;padding-left:12px">รายการประเมินและข้อกำหนด</th>
+        <th class="th-crit" style="background:#fce4ec;color:#ad1457">ข้อบ่งชี้</th>
+        <th class="th-sc" style="background:#fce4ec;color:#ad1457">0<div class="sc-lbl">No Evid.</div></th>
+        <th class="th-sc" style="background:#fce4ec;color:#ad1457">1<div class="sc-lbl">Begin.</div></th>
+        <th class="th-sc" style="background:#fce4ec;color:#ad1457">2<div class="sc-lbl">Basic.</div></th>
+        <th class="th-sc" style="background:#fce4ec;color:#ad1457">3<div class="sc-lbl">Mature</div></th>
+        <th class="th-sc" style="background:#fce4ec;color:#ad1457">4<div class="sc-lbl">Adv.</div></th>
+        <th class="th-sc" style="background:#fce4ec;color:#ad1457">5<div class="sc-lbl">Role M.</div></th>
+        <th class="th-tot" style="background:#fce4ec;color:#ad1457">รวมคะแนน<br>รายข้อ</th>
+      </tr></thead>
+      <tbody id="q4Body"></tbody>
+    </table></div>
+    <div class="sec-total"><span>คะแนนรวมส่วนที่ 2 :</span>
+      <span class="tc" style="background:#fce4ec;color:#ad1457"><span id="q4Total">0.00</span> / 60 &nbsp;(<span id="q4Pct">0.0</span>%)</span></div>
+  </div>
+
+  <!-- PART 3 -->
+  <div class="section-wrap">
+    <div class="sec-head out">
+      <div class="sec-icon">📊</div>
+      <div>
+        <div style="font-size:15px;font-weight:700">ส่วนที่ 3 : แบบประเมินผลลัพธ์คุณภาพการบริการพยาบาลผู้คลอด — มิติผลลัพธ์</div>
+        <div class="sec-meta">6 ข้อประเมิน × 5 คะแนน = 30 คะแนน &nbsp;|&nbsp; ข้อบ่งชี้ : Le · T · C · I</div>
+      </div>
+    </div>
+    <div class="assess-wrap"><table class="at out-t" id="o4Tbl">
+      <thead><tr>
+        <th class="th-num">ข้อ</th><th class="th-desc">รายการประเมินและตัวชี้วัด</th><th class="th-crit">ข้อบ่งชี้</th>
+        <th class="th-sc">0<div class="sc-lbl">No Evid.</div></th><th class="th-sc">1<div class="sc-lbl">1–20%</div></th>
+        <th class="th-sc">2<div class="sc-lbl">21–40%</div></th><th class="th-sc">3<div class="sc-lbl">41–60%</div></th>
+        <th class="th-sc">4<div class="sc-lbl">61–80%</div></th><th class="th-sc">5<div class="sc-lbl">81–100%</div></th>
+        <th class="th-tot">รวมคะแนน<br>รายข้อ</th>
+      </tr></thead>
+      <tbody id="o4Body"></tbody>
+    </table></div>
+    <div class="sec-total"><span>คะแนนรวมส่วนที่ 3 :</span>
+      <span class="tc tc-o"><span id="o4Total">0.00</span> / 30 &nbsp;(<span id="o4Pct">0.0</span>%)</span></div>
+  </div>
+
+  <!-- GRAND TOTAL -->
+  <div class="grand-card" id="grandSection4">
+    <h2>🏆 สรุปผลการประเมินคุณภาพการบริการพยาบาลผู้คลอด</h2>
+    <div class="sg">
+      <div class="sb2"><div class="sv" id="g4P1">0.00</div><div class="sm">/70 คะแนน</div><div class="sl">⚙️ ส่วนที่ 1 มิติกระบวนการบริหาร</div></div>
+      <div class="sb2"><div class="sv" id="g4P2">0.00</div><div class="sm">/60 คะแนน</div><div class="sl">👶 ส่วนที่ 2 มิติกระบวนการปฏิบัติ</div></div>
+      <div class="sb2"><div class="sv" id="g4O">0.00</div><div class="sm">/30 คะแนน</div><div class="sl">📊 ส่วนที่ 3 มิติผลลัพธ์</div></div>
+      <div class="sb2 grand"><div class="sv" id="g4T">0.00</div><div class="sm">/160 คะแนน</div><div class="sl">⭐ คะแนนรวม</div></div>
+      <div class="sb2"><div class="sv" id="g4Pct">0.0%</div><div class="sm">(÷160×100)</div><div class="sl">📈 ร้อยละ</div></div>
+    </div>
+    <div class="prog-wrap">
+      <div class="prog-lbl"><span>0%</span><span>Beginning</span><span>Basically</span><span>Mature</span><span>Advanced</span><span>Role Model</span><span>100%</span></div>
+      <div class="prog-bg"><div class="prog-fill" id="pFill4" style="width:0%"></div></div>
+    </div>
+    <div class="ibar"><span class="ilvl" id="iLvl4">—</span><span class="itxt" id="iTxt4">กรุณากรอกแบบประเมินครบทุกข้อ แล้วกดปุ่ม "คำนวณคะแนน"</span></div>
+  </div>
+
+  <!-- RESULT TABLE -->
+  <div class="rtbl-wrap">
+    <div class="rtbl-head">📋 ตารางสรุปคะแนนรายข้อ — LR / ห้องคลอด</div>
+    <div style="overflow-x:auto"><table class="rtbl">
+      <thead><tr><th>ข้อ</th><th>รายการประเมิน</th><th>A/Le</th><th>D/T</th><th>L/C</th><th>I</th><th>คะแนน</th><th>ระดับ</th></tr></thead>
+      <tbody id="r4Body"><tr><td colspan="8" style="text-align:center;color:#aaa;padding:20px">กรุณากดปุ่ม "คำนวณคะแนน" เพื่อดูผลสรุป</td></tr></tbody>
+    </table></div>
+  </div>
+
+</div>
 <div id="m5" style="display:none">
   <div class="cs-wrap">
     <div class="status-badge status-soon">⏳ รอรับข้อมูลจากหนังสือเล่ม 5</div>
@@ -2185,9 +2416,11 @@ document.addEventListener('DOMContentLoaded',()=>{
   buildTables();
   buildTables2();
   buildTables3();
+  buildTables4();
   document.getElementById('aDate').value=new Date().toISOString().slice(0,10);
   if(document.getElementById('aDate2'))document.getElementById('aDate2').value=new Date().toISOString().slice(0,10);
   if(document.getElementById('aDate3'))document.getElementById('aDate3').value=new Date().toISOString().slice(0,10);
+  if(document.getElementById('aDate4'))document.getElementById('aDate4').value=new Date().toISOString().slice(0,10);
 });
 
 // ===============================================================
@@ -2233,7 +2466,7 @@ function openImportModal() {
 function renderSessionList(filterModId) {
   const sessions = getSessions();
   const wrap = document.getElementById('sessionListWrap');
-  const modLabels={'m1':'เล่ม 1 การบริหารองค์กรพยาบาล','m2':'เล่ม 2 ผู้ป่วยนอก (OPD)','m3':'เล่ม 3 อุบัติเหตุและฉุกเฉิน (ER)'};
+  const modLabels={'m1':'เล่ม 1 การบริหารองค์กรพยาบาล','m2':'เล่ม 2 ผู้ป่วยนอก (OPD)','m3':'เล่ม 3 อุบัติเหตุและฉุกเฉิน (ER)','m4':'เล่ม 4 ผู้คลอด (LR)'};
 
   // Filter bar
   let filterHTML = `<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center">
@@ -2601,6 +2834,15 @@ document.addEventListener('DOMContentLoaded', ()=>{
   setTimeout(calcStorageUsage, 1000);
 });
 
+
+
+function showGCx(id,btn,modId){
+  const container=document.getElementById(modId);
+  if(container){container.querySelectorAll('.gc').forEach(d=>d.classList.remove('show'));
+  container.querySelectorAll('.guide-tabs .gtab').forEach(b=>b.classList.remove('active'));}
+  const el=document.getElementById(id); if(el)el.classList.add('show');
+  if(btn)btn.classList.add('active');
+}
 
 function showGC2(id,btn){
   document.querySelectorAll('#m2 .gc').forEach(d=>d.classList.remove('show'));
@@ -3075,7 +3317,7 @@ function openSaveModal(modId){
   else if(mid==='m3'){ let p1=0,p2=0,o=0; PI3.forEach(i=>{const s=cI3('p3',i.n,false);if(s!==null)p1+=s;}); QI3.forEach(i=>{const nk=i.n.replace('.','_');const s=cI3('q3',nk,false);if(s!==null)p2+=s;}); OI3.forEach(i=>{const s=cI3('o3',i.n,true);if(s!==null)o+=s;}); totals={pt:p1+p2,ot:o,grand:p1+p2+o,maxScore:160}; }
   const pct=(totals.grand/(totals.maxScore||100))*100;
   const interpRow=INTERP.find(x=>pct<=x.max)||INTERP[INTERP.length-1];
-  const modLabel={'m1':'การบริหารองค์กรพยาบาล','m2':'ผู้ป่วยนอก (OPD)','m3':'อุบัติเหตุและฉุกเฉิน (ER)'}[mid]||mid;
+  const modLabel={'m1':'การบริหารองค์กรพยาบาล','m2':'ผู้ป่วยนอก (OPD)','m3':'อุบัติเหตุและฉุกเฉิน (ER)','m4':'ผู้คลอด (LR)'}[mid]||mid;
   document.getElementById('savePreview').innerHTML=`
     <div style="font-size:12px;color:#888;margin-bottom:6px">โมดูล: <strong>${modLabel}</strong></div>
     <div class="sp-row"><span>คะแนนรวม</span><span><strong>${totals.grand.toFixed(2)}</strong> / ${totals.maxScore} คะแนน (${pct.toFixed(1)}%)</span></div>
@@ -3118,6 +3360,10 @@ function collectState(mid){
     PI2.forEach(item=>{PC2.forEach(c=>{const el=document.querySelector(`input[name="p2${item.n}_${c}"]:checked`);scores[`p2${item.n}_${c}`]=el?parseFloat(el.value):null;});});
     QI2.forEach(item=>{const nk=item.n.replace('.','_');PC2.forEach(c=>{const el=document.querySelector(`input[name="q2${nk}_${c}"]:checked`);scores[`q2${nk}_${c}`]=el?parseFloat(el.value):null;});});
     OI2.forEach(item=>{OC2.forEach(c=>{const el=document.querySelector(`input[name="o2${item.n}_${c}"]:checked`);scores[`o2${item.n}_${c}`]=el?parseFloat(el.value):null;});});
+  } else if(mid==='m4'){
+    PI4.forEach(item=>{PC4.forEach(c=>{const el=document.querySelector(`input[name="p4${item.n}_${c}"]:checked`);scores[`p4${item.n}_${c}`]=el?parseFloat(el.value):null;});});
+    QI4.forEach(item=>{const nk=item.n.replace('.','_');PC4.forEach(c=>{const el=document.querySelector(`input[name="q4${nk}_${c}"]:checked`);scores[`q4${nk}_${c}`]=el?parseFloat(el.value):null;});});
+    OI4.forEach(item=>{OC4.forEach(c=>{const el=document.querySelector(`input[name="o4${item.n}_${c}"]:checked`);scores[`o4${item.n}_${c}`]=el?parseFloat(el.value):null;});});
   } else if(mid==='m3'){
     PI3.forEach(item=>{PC3.forEach(c=>{const el=document.querySelector(`input[name="p3${item.n}_${c}"]:checked`);scores[`p3${item.n}_${c}`]=el?parseFloat(el.value):null;});});
     QI3.forEach(item=>{const nk=item.n.replace('.','_');PC3.forEach(c=>{const el=document.querySelector(`input[name="q3${nk}_${c}"]:checked`);scores[`q3${nk}_${c}`]=el?parseFloat(el.value):null;});});
@@ -3148,6 +3394,13 @@ function calcTotals(scores,mid){
     QI_.forEach(i=>{const nk=i.n.replace('.','_');const vs={};let ok=true;PC3.forEach(c=>{const v=scores[`${qp}${nk}_${c}`];if(v===null||v===undefined)ok=false;vs[c]=v;});if(!ok)return;if(vs['A']===0)return;p2+=Math.min(PC3.reduce((s,c)=>s+vs[c],0)/4,vs['A']);});
     OI_.forEach(i=>{const vs={};let ok=true;OC3.forEach(c=>{const v=scores[`${op}${i.n}_${c}`];if(v===null||v===undefined)ok=false;vs[c]=v;});if(!ok)return;if(vs['Le']===0)return;ot+=Math.min(OC3.reduce((s,c)=>s+vs[c],0)/4,vs['Le']);});
     return{pt:parseFloat((p1+p2).toFixed(2)),ot:parseFloat(ot.toFixed(2)),grand:parseFloat((p1+p2+ot).toFixed(2)),maxScore:160};
+  } else if(mid==='m4'){
+    const PI_=PI4,QI_=QI4,OI_=OI4,pp='p4',qp='q4',op='o4';
+    let p1=0,p2=0;
+    PI_.forEach(i=>{const vs={};let ok=true;PC4.forEach(c=>{const v=scores[`${pp}${i.n}_${c}`];if(v===null||v===undefined)ok=false;vs[c]=v;});if(!ok)return;if(vs['A']===0)return;p1+=Math.min(PC4.reduce((s,c)=>s+vs[c],0)/4,vs['A']);});
+    QI_.forEach(i=>{const nk=i.n.replace('.','_');const vs={};let ok=true;PC4.forEach(c=>{const v=scores[`${qp}${nk}_${c}`];if(v===null||v===undefined)ok=false;vs[c]=v;});if(!ok)return;if(vs['A']===0)return;p2+=Math.min(PC4.reduce((s,c)=>s+vs[c],0)/4,vs['A']);});
+    OI_.forEach(i=>{const vs={};let ok=true;OC4.forEach(c=>{const v=scores[`${op}${i.n}_${c}`];if(v===null||v===undefined)ok=false;vs[c]=v;});if(!ok)return;if(vs['Le']===0)return;ot+=Math.min(OC4.reduce((s,c)=>s+vs[c],0)/4,vs['Le']);});
+    return{pt:parseFloat((p1+p2).toFixed(2)),ot:parseFloat(ot.toFixed(2)),grand:parseFloat((p1+p2+ot).toFixed(2)),maxScore:160};
   }
   return{pt:0,ot:0,grand:0,maxScore:100};
 }
@@ -3170,6 +3423,7 @@ function applyState(state){
   if(mid==='m1')onSc();
   else if(mid==='m2')onSc2();
   else if(mid==='m3')onSc3();
+  else if(mid==='m4')onSc4();
 }
 
 // Override openLoadModal to show module badge
@@ -3177,6 +3431,399 @@ const _origOpenLoadModal=openLoadModal;
 function openLoadModal(modId){
   renderSessionList(modId||_activeModId);
   showModal('modalLoad');
+}
+
+
+// ============================================================
+// MODULE 4 — LR (ผู้คลอด) DATA & FUNCTIONS
+// ============================================================
+const PI4 = [
+  {n:1,t:'การนำองค์กรพยาบาลผู้คลอด',std:'มาตรฐาน 1-3',
+   m:'ผู้บริหารหน่วยงานบริการพยาบาลร่วมเป็นทีมการบริหารขององค์กรพยาบาลในการนำองค์กร ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การวิเคราะห์งานการพยาบาลของหน่วยงานบริการพยาบาล',
+      '2) การร่วมกำหนดขอบเขตการบริหาร วิสัยทัศน์ พันธกิจ ค่านิยม เป้าหมายการดำเนินงาน และกลไกการสื่อสารขององค์กรพยาบาล',
+      '3) การร่วมกำหนดระบบการบริหารจัดการโดยใช้หลักธรรมาภิบาล และการเสริมสร้างบรรยากาศองค์กรของหน่วยงานพยาบาล']},
+  {n:2,t:'การแสดงความรับผิดชอบต่อสังคม',std:'มาตรฐาน 4',
+   m:'งานบริการพยาบาลร่วมกับองค์กรพยาบาลในการแสดงความรับผิดชอบต่อสังคม ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การแสดงความรับผิดชอบต่อสาธารณะ',
+      '2) การดำเนินงานด้านมาตรฐานวิชาชีพ',
+      '3) การสนับสนุนและสร้างความเข้มแข็งให้กับชุมชนและสังคม']},
+  {n:3,t:'การวางแผนยุทธศาสตร์องค์กรพยาบาล',std:'มาตรฐาน 5',
+   m:'ผู้บริหารหน่วยงานบริการพยาบาลร่วมเป็นทีมการบริหารขององค์กรพยาบาลในการวางแผนยุทธศาสตร์ ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การวิเคราะห์ผลการดำเนินงานและปัจจัยที่เกี่ยวข้องกับการจัดทำยุทธศาสตร์ของหน่วยงานบริการพยาบาล',
+      '2) การกำหนดและวิเคราะห์ปัจจัยที่เกี่ยวข้องกับการจัดทำยุทธศาสตร์องค์กรพยาบาล',
+      '3) การกำหนดแผนยุทธศาสตร์ เป้าประสงค์ กิจกรรม และตัวชี้วัดสำคัญ']},
+  {n:4,t:'การแปลงยุทธศาสตร์ไปสู่การปฏิบัติ',std:'มาตรฐาน 6',
+   m:'งานบริการพยาบาลแปลงยุทธศาสตร์ไปสู่การปฏิบัติ ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การจัดทำ ติดตาม ทบทวน และปรับปรุงแผนปฏิบัติการด้านการพัฒนาคุณภาพการพยาบาลและการพัฒนาบุคลากร',
+      '2) การสื่อสารแผนปฏิบัติการไปยังบุคลากรพยาบาลทุกระดับ',
+      '3) การกำหนดการวัด การคาดการณ์ผลการดำเนินการ และการเทียบเคียงผลการดำเนินงานด้านการพยาบาลที่สำคัญ']},
+  {n:5,t:'การเรียนรู้เกี่ยวกับผู้ใช้บริการและผู้มีส่วนได้ส่วนเสีย',std:'มาตรฐาน 7',
+   m:'งานบริการพยาบาลดำเนินการด้านการเรียนรู้เกี่ยวกับผู้ใช้บริการและผู้มีส่วนได้ส่วนเสีย ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การกำหนดกลุ่มผู้ใช้บริการและผู้มีส่วนได้ส่วนเสียที่สำคัญ กลุ่มที่ต้องการมุ่งเน้น และกลุ่มที่พึงมีหรืออาจจะเพิ่มขึ้นในอนาคต',
+      '2) การรับฟังและเรียนรู้ความต้องการและความคาดหวังของผู้ใช้บริการและผู้มีส่วนได้ส่วนเสียแต่ละกลุ่ม',
+      '3) ข้อมูลสารสนเทศเกี่ยวกับกลุ่มผู้ใช้บริการ การวิเคราะห์ การนำข้อมูลไปเรียนรู้และตอบสนองความต้องการ เพื่อการพัฒนาคุณภาพงานบริการพยาบาล']},
+  {n:6,t:'ความสัมพันธ์และความพึงพอใจของผู้ใช้บริการและผู้มีส่วนได้ส่วนเสีย',std:'มาตรฐาน 8',
+   m:'งานบริการพยาบาลดำเนินการด้านความสัมพันธ์และความพึงพอใจของผู้ใช้บริการและผู้มีส่วนได้ส่วนเสีย ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การกำหนดช่องทาง/วิธีการรับฟังข้อคิดเห็นและข้อร้องเรียน การรวบรวม การวิเคราะห์ การจัดการ การตอบกลับ และระบบการประเมินความพึงพอใจและไม่พึงพอใจ',
+      '2) ระบบการเฝ้าระวังความเสี่ยงและการตอบสนองต่ออุบัติการณ์ที่ส่งผลกระทบต่อภาพลักษณ์องค์กร',
+      '3) ระบบการให้ข้อมูลและการพิทักษ์สิทธิกลุ่มผู้ใช้บริการ']},
+  {n:7,t:'การวัดและวิเคราะห์ผลการดำเนินงาน',std:'มาตรฐาน 9',
+   m:'งานบริการพยาบาลดำเนินการด้านการวัดและวิเคราะห์ผลการดำเนินงาน ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การคัดเลือกตัวชี้วัดผลการดำเนินงานที่สำคัญ และการเลือกสารสนเทศเชิงเปรียบเทียบ',
+      '2) การเก็บรวบรวม การวิเคราะห์ และการสื่อสารผลการดำเนินงานตามตัวชี้วัดสำคัญ',
+      '3) การนำสารสนเทศไปใช้ประโยชน์ และการปรับปรุงสารสนเทศให้ทันสมัย น่าเชื่อถือ']},
+  {n:8,t:'การจัดการสารสนเทศและความรู้',std:'มาตรฐาน 10',
+   m:'งานบริการพยาบาลดำเนินการด้านการจัดการสารสนเทศและความรู้ ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) กำหนดชุดข้อมูลพื้นฐานทางการพยาบาล การบันทึก การจัดเก็บ การรายงาน การเข้าถึงอย่างปลอดภัย และการนำไปใช้ประโยชน์',
+      '2) การจัดระบบสารสนเทศทางการพยาบาลที่มีคุณลักษณะดีทั้งในภาวะปกติและฉุกเฉิน สอดรับกับนโยบายความมั่นคงปลอดภัยทางไซเบอร์และการคุ้มครองข้อมูลส่วนบุคคล',
+      '3) การใช้กระบวนการจัดการความรู้ในการสนับสนุนการบริหาร การบริการ วิชาการ และการพัฒนาคุณภาพพยาบาล']},
+  {n:9,t:'ระบบการบริหารงานบุคคล',std:'มาตรฐาน 11',
+   m:'งานบริการพยาบาลดำเนินการด้านระบบการบริหารงานบุคคล ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การกำหนดกลวิธีการบริหารงานบุคคล และการบริหารอัตรากำลังบุคลากรพยาบาล',
+      '2) ระบบการประเมินผลการปฏิบัติงานบุคลากรพยาบาล',
+      '3) ระบบการจ้างงาน การธำรงรักษา การประเมินสมรรถนะที่จำเป็น และการสืบทอดตำแหน่ง']},
+  {n:10,t:'การเรียนรู้และสร้างแรงจูงใจบุคลากรพยาบาล',std:'มาตรฐาน 12',
+   m:'งานบริการพยาบาลดำเนินการด้านการเรียนรู้และการสร้างแรงจูงใจบุคลากรพยาบาล ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การพัฒนาบุคลากรใหม่และระหว่างประจำการ',
+      '2) การสร้างแรงจูงใจและความผูกพันองค์กร',
+      '3) การพัฒนาความก้าวหน้าในงาน']},
+  {n:11,t:'ความผาสุกและความพึงพอใจของบุคลากรพยาบาล',std:'มาตรฐาน 13',
+   m:'งานบริการพยาบาลดำเนินการด้านความผาสุกและความพึงพอใจของบุคลากรพยาบาล ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การจัดสภาพแวดล้อม บรรยากาศ และความปลอดภัยในการทำงาน',
+      '2) การสนับสนุนความผาสุก แรงจูงใจ ความพึงพอใจในการทำงาน และการปกป้องสิทธิในฐานะผู้ประกอบวิชาชีพ',
+      '3) การสนับสนุนสวัสดิการ ระบบการดูแลสุขภาพบุคลากรพยาบาล และอาชีวอนามัยในการทำงาน']},
+  {n:12,t:'การจัดระบบบริการพยาบาลผู้คลอด',std:'มาตรฐาน 14',
+   m:'งานบริการพยาบาลดำเนินการด้านการจัดระบบบริการพยาบาล ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) ระบบบริการพยาบาลตามกระบวนการหลักของการจัดบริการพยาบาล และการใช้กระบวนการพยาบาลในการให้บริการและบันทึกทางการพยาบาล',
+      '2) การพยาบาลตอบสนองต่อปัญหาความต้องการของผู้ใช้บริการและการพยาบาลองค์รวม',
+      '3) การสร้างนวัตกรรมทางการพยาบาล และกลไกการพัฒนาและประกันคุณภาพการพยาบาล']},
+  {n:13,t:'การจัดระบบสนับสนุนการจัดบริการพยาบาลและการพัฒนาคุณภาพการพยาบาล',std:'มาตรฐาน 15',
+   m:'งานบริการพยาบาลดำเนินการด้านการจัดระบบสนับสนุนการจัดบริการพยาบาลและการพัฒนาคุณภาพ ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) ระบบบริหารจัดการความเสี่ยง และการประสานงานระหว่างหน่วยงาน',
+      '2) จัดระบบการควบคุมต้นทุนในการจัดบริการพยาบาล',
+      '3) จัดระบบสารสนเทศทางการพยาบาล']},
+  {n:14,t:'การแสดงผลลัพธ์การดำเนินงานบริการพยาบาลผู้คลอดในภาพรวม',std:'มาตรฐาน 16',
+   m:'งานบริการพยาบาลแสดงผลลัพธ์การดำเนินงานบริการพยาบาลที่สะท้อนความสำเร็จในภาพรวม ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การกำหนดตัวชี้วัดผลลัพธ์ด้านการนำองค์กร ด้านประสิทธิภาพ ด้านผู้ใช้บริการ ด้านบุคลากร ด้านระบบงานและกระบวนการสำคัญ และด้านการบริการพยาบาล',
+      '2) การแสดงค่าเป้าหมาย ผลการดำเนินงานปัจจุบัน แนวโน้ม และค่าเทียบเคียง',
+      '3) การทบทวนผลลัพธ์การดำเนินงานบริการพยาบาล']}
+];
+
+const QI4 = [
+  // ── ระยะรอคลอด ─────────────────────────────────────────────
+  {n:'1.1',t:'การประเมินสภาพผู้ใช้บริการ — ระยะรอคลอด',
+   main:'ระยะรอคลอด : มุ่งเน้นการคัดกรองเบื้องต้น การประเมินความก้าวหน้าของการคลอด บรรเทาความไม่สุขสบายจากอาการเจ็บครรภ์หรือความกังวลกับการคลอด และการจัดกิจกรรมสร้างเสริมสุขภาพ',
+   m:'การประเมินสภาพผู้ใช้บริการ: พยาบาลวิชาชีพรวบรวมข้อมูลภาวะสุขภาพมารดาคลอดและทารกในครรภ์ เพื่อใช้สนับสนุนการวินิจฉัย การวางแผน และการปฏิบัติการพยาบาล ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การระบุตัวมารดาคลอด',
+      '2) การประเมินประวัติการตั้งครรภ์และภาวะเสี่ยง',
+      '3) การประเมินภาวะสุขภาพการตั้งครรภ์ ความก้าวหน้าของการคลอด อาการรบกวน และภาวะเสี่ยง',
+      '4) การประเมินความวิตกกังวล ความรู้ความเข้าใจกระบวนการคลอด และความต้องการการพยาบาลอย่างเป็นองค์รวม']},
+  {n:'1.2',t:'การวินิจฉัยทางการพยาบาล การวางแผน และการปฏิบัติกิจกรรม — ระยะรอคลอด',
+   main:'ระยะรอคลอด',
+   m:'การวินิจฉัยทางการพยาบาล การวางแผน และการปฏิบัติกิจกรรมการพยาบาล: พยาบาลวิชาชีพจัดลำดับความสำคัญข้อวินิจฉัยทางการพยาบาล วางแผนและปฏิบัติกิจกรรมการพยาบาล ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การจำแนกประเภทมารดาคลอดที่สัมพันธ์กับความก้าวหน้าของการคลอดและการประเมินสภาพผู้ใช้บริการ',
+      '2) การวินิจฉัยทางการพยาบาลและการวางแผนการพยาบาลตามลำดับความเร่งด่วนหรือการคุกคามต่อมารดาคลอดและทารกในครรภ์ สอดคล้องกับการประเมินสภาพผู้ใช้บริการและความต้องการการพยาบาล',
+      '3) การปฏิบัติกิจกรรมการพยาบาลอย่างเป็นองค์รวม ครอบคลุมข้อวินิจฉัยทางการพยาบาลและการวางแผนการพยาบาล',
+      '4) กิจกรรมการพยาบาลครอบคลุมการติดตามความก้าวหน้าของการคลอด การเฝ้าระวัง การดูแลเมื่อเกิดภาวะฉุกเฉิน การบรรเทาอาการรบกวน การจัดการและการป้องกันความเสี่ยง การคุ้มครองภาวะสุขภาพ การจัดสิ่งแวดล้อม การสร้างเสริมสุขภาพ การให้ข้อมูลและเตรียมความพร้อมต่อการคลอด และการพิทักษ์สิทธิ']},
+  {n:'1.3',t:'การประเมินผลการปฏิบัติการพยาบาล — ระยะรอคลอด',
+   main:'ระยะรอคลอด',
+   m:'การประเมินผลการปฏิบัติการพยาบาล: พยาบาลวิชาชีพรวบรวมข้อมูลการเปลี่ยนแปลงของภาวะสุขภาพมารดาคลอดและทารกในครรภ์ เพื่อประเมินผลการปฏิบัติกิจกรรมการพยาบาล ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การประเมินผลสอดคล้องกับความก้าวหน้าของการคลอดและการดูแลเฉพาะทางสูติกรรม',
+      '2) การประเมินผลครอบคลุมข้อวินิจฉัยทางการพยาบาล การวางแผนการพยาบาล และการปฏิบัติกิจกรรมการพยาบาล',
+      '3) การประเมินผลตามเวลาที่กำหนดไว้ในกิจกรรมการพยาบาล และครอบคลุมข้อมูลจากมารดาคลอด ครอบครัว และสหวิชาชีพ',
+      '4) การใช้ข้อมูลการประเมินผลเพื่อการปรับปรุงข้อวินิจฉัยทางการพยาบาล การวางแผนการพยาบาล และการปฏิบัติกิจกรรมการพยาบาล']},
+  {n:'1.4',t:'การบันทึกทางการพยาบาล — ระยะรอคลอด',
+   main:'ระยะรอคลอด',
+   m:'การบันทึกทางการพยาบาล: พยาบาลวิชาชีพบันทึกทางการพยาบาลหลังเสร็จสิ้นกระบวนการพยาบาล ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การบันทึกทางการพยาบาลตามหลักกระบวนการพยาบาล และการใช้สื่อสารภายในทีมการพยาบาลและระหว่างวิชาชีพที่เกี่ยวข้อง',
+      '2) การบันทึกทางการพยาบาลกระชับ (Concise) ถูกต้อง (Correct) ครบถ้วน (Complete) สอดคล้องกับปัญหาและความต้องการการพยาบาลอย่างเป็นองค์รวมของมารดาคลอดและทารกในครรภ์ สัมพันธ์กับการดูแลเฉพาะทางสูติกรรม',
+      '3) การบันทึกทางการพยาบาลเป็นลายลักษณ์อักษร อ่านได้ชัดเจน และใช้เป็นหลักฐานทางกฎหมายได้ (Clear)',
+      '4) การตรวจสอบความสมบูรณ์ของบันทึกทางการพยาบาลเป็นระยะ สม่ำเสมอ และการนำผลการตรวจสอบไปปรับปรุงคุณภาพการปฏิบัติการพยาบาล']},
+  // ── ระยะคลอด ────────────────────────────────────────────────
+  {n:'2.1',t:'การประเมินสภาพผู้ใช้บริการ — ระยะคลอด',
+   main:'ระยะคลอด : มุ่งเน้นการช่วยเหลือให้ผ่านกระบวนการคลอดได้อย่างปลอดภัยทั้งมารดาและทารกแรกคลอด ครอบคลุมการคลอดโดยธรรมชาติและการใช้อุปกรณ์ช่วยคลอดผ่านทางช่องคลอด',
+   m:'การประเมินสภาพผู้ใช้บริการ: พยาบาลวิชาชีพรวบรวมข้อมูลภาวะสุขภาพของมารดาคลอด ทารกในครรภ์ และทารกแรกเกิด เพื่อใช้สนับสนุนการวินิจฉัย การวางแผน และการปฏิบัติการพยาบาล ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การระบุตัวมารดาคลอดและทารกแรกเกิด',
+      '2) การประเมินภาวะสุขภาพและภาวะเสี่ยงของมารดาคลอด ความก้าวหน้าของการคลอดทารก และการคลอดรก',
+      '3) การประเมินภาวะสุขภาพและภาวะเสี่ยงของทารกในครรภ์และทารกแรกเกิด',
+      '4) การประเมินความวิตกกังวล ความรู้ความเข้าใจกระบวนการคลอด และความต้องการการพยาบาลอย่างเป็นองค์รวม']},
+  {n:'2.2',t:'การวินิจฉัยทางการพยาบาล การวางแผน และการปฏิบัติกิจกรรม — ระยะคลอด',
+   main:'ระยะคลอด',
+   m:'การวินิจฉัยทางการพยาบาล การวางแผน และการปฏิบัติกิจกรรมการพยาบาล: พยาบาลวิชาชีพจัดลำดับความสำคัญข้อวินิจฉัยทางการพยาบาล วางแผนและปฏิบัติกิจกรรมการพยาบาล ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การจำแนกประเภทมารดาคลอดและทารกแรกเกิดที่สัมพันธ์กับการประเมินสภาพผู้ใช้บริการ',
+      '2) การวินิจฉัยทางการพยาบาลและการวางแผนการพยาบาลตามลำดับความเร่งด่วนหรือการคุกคามต่อมารดาคลอด ทารกในครรภ์ และทารกแรกเกิด สอดคล้องกับการประเมินสภาพผู้ใช้บริการและความต้องการการพยาบาล',
+      '3) การปฏิบัติกิจกรรมการพยาบาลอย่างเป็นองค์รวม ครอบคลุมข้อวินิจฉัยทางการพยาบาลและการวางแผนการพยาบาล',
+      '4) กิจกรรมการพยาบาลครอบคลุมการส่งเสริมกระบวนการคลอดที่ปลอดภัยทั้งมารดาคลอด ทารกในครรภ์ และทารกแรกเกิด การเฝ้าระวัง การดูแลเมื่อเกิดภาวะฉุกเฉิน การจัดการและการป้องกันความเสี่ยง การคุ้มครองภาวะสุขภาพ การสร้างเสริมสุขภาพ การให้ข้อมูล และการพิทักษ์สิทธิ']},
+  {n:'2.3',t:'การประเมินผลการปฏิบัติการพยาบาล — ระยะคลอด',
+   main:'ระยะคลอด',
+   m:'การประเมินผลการปฏิบัติการพยาบาล: พยาบาลวิชาชีพรวบรวมข้อมูลการเปลี่ยนแปลงของภาวะสุขภาพมารดาคลอด ทารกในครรภ์ และทารกแรกเกิด เพื่อประเมินผลการปฏิบัติกิจกรรมการพยาบาล ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การประเมินผลสอดคล้องกับภาวะสุขภาพมารดาคลอด ทารกในครรภ์ และทารกแรกเกิด และการดูแลเฉพาะทางสูติกรรม',
+      '2) การประเมินผลครอบคลุมข้อวินิจฉัยทางการพยาบาล การวางแผนการพยาบาล และการปฏิบัติกิจกรรมการพยาบาล',
+      '3) การประเมินผลตามเวลาที่กำหนดไว้ในกิจกรรมการพยาบาล และครอบคลุมข้อมูลจากมารดาคลอด ครอบครัว และสหวิชาชีพ',
+      '4) การใช้ข้อมูลการประเมินผลเพื่อการปรับปรุงข้อวินิจฉัยทางการพยาบาล การวางแผนการพยาบาล และการปฏิบัติกิจกรรมการพยาบาล']},
+  {n:'2.4',t:'การบันทึกทางการพยาบาล — ระยะคลอด',
+   main:'ระยะคลอด',
+   m:'การบันทึกทางการพยาบาล: พยาบาลวิชาชีพบันทึกทางการพยาบาลหลังเสร็จสิ้นกระบวนการพยาบาล ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การบันทึกทางการพยาบาลตามหลักกระบวนการพยาบาล และการใช้สื่อสารภายในทีมการพยาบาลและระหว่างวิชาชีพที่เกี่ยวข้อง',
+      '2) การบันทึกทางการพยาบาลกระชับ (Concise) ถูกต้อง (Correct) ครบถ้วน (Complete) สอดคล้องกับปัญหาและความต้องการการพยาบาลอย่างเป็นองค์รวมของมารดาคลอด ทารกในครรภ์ และทารกแรกเกิด สัมพันธ์กับการดูแลเฉพาะทางสูติกรรม',
+      '3) การบันทึกทางการพยาบาลเป็นลายลักษณ์อักษร อ่านได้ชัดเจน และใช้เป็นหลักฐานทางกฎหมายได้ (Clear)',
+      '4) การตรวจสอบความสมบูรณ์ของบันทึกทางการพยาบาลเป็นระยะ สม่ำเสมอ และการนำผลการตรวจสอบไปปรับปรุงคุณภาพการปฏิบัติการพยาบาล']},
+  // ── ระยะหลังคลอดและการดูแลต่อเนื่อง ────────────────────────
+  {n:'3.1',t:'การประเมินสภาพผู้ใช้บริการ — ระยะหลังคลอดและการดูแลต่อเนื่อง',
+   main:'ระยะหลังคลอดและการดูแลต่อเนื่อง : มุ่งเน้นการเฝ้าระวังมารดาและทารก 2 ชั่วโมงหลังคลอด การดูแลเมื่อเกิดภาวะฉุกเฉิน และการให้คำแนะนำการดูแลตนเองและบุตรต่อเนื่อง',
+   m:'การประเมินสภาพผู้ใช้บริการ: พยาบาลวิชาชีพรวบรวมข้อมูลภาวะสุขภาพของมารดาคลอดและทารกแรกเกิด เพื่อใช้สนับสนุนการวินิจฉัย การวางแผน และการปฏิบัติการพยาบาล ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การระบุตัวมารดาคลอดและทารกแรกเกิด',
+      '2) การประเมินภาวะสุขภาพและภาวะเสี่ยงของมารดาคลอดและทารกแรกเกิด',
+      '3) การประเมินความวิตกกังวล และความต้องการการพยาบาลอย่างเป็นองค์รวม',
+      '4) การประเมินความรู้และทักษะของมารดาคลอดในการดูแลตนเองและบุตรหลังคลอด']},
+  {n:'3.2',t:'การวินิจฉัยทางการพยาบาล การวางแผน และการปฏิบัติกิจกรรม — ระยะหลังคลอดและการดูแลต่อเนื่อง',
+   main:'ระยะหลังคลอดและการดูแลต่อเนื่อง',
+   m:'การวินิจฉัยทางการพยาบาล การวางแผน และการปฏิบัติกิจกรรมการพยาบาล: พยาบาลวิชาชีพจัดลำดับความสำคัญข้อวินิจฉัยทางการพยาบาล วางแผนและปฏิบัติกิจกรรมการพยาบาล ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การจำแนกประเภทมารดาคลอดและทารกแรกเกิดที่สัมพันธ์กับการประเมินสภาพผู้ใช้บริการ',
+      '2) การวินิจฉัยทางการพยาบาลและการวางแผนการพยาบาลตามลำดับความเร่งด่วนหรือการคุกคามต่อมารดาคลอดและทารกแรกเกิด สอดคล้องกับการประเมินสภาพผู้ใช้บริการและความต้องการการพยาบาล',
+      '3) การปฏิบัติกิจกรรมการพยาบาลอย่างเป็นองค์รวม ครอบคลุมข้อวินิจฉัยทางการพยาบาลและการวางแผนการพยาบาล',
+      '4) กิจกรรมการพยาบาลครอบคลุมการกระตุ้นดูดนมมารดา การเฝ้าระวัง การดูแลเมื่อเกิดภาวะฉุกเฉิน การจัดการและการป้องกันความเสี่ยง การคุ้มครองภาวะสุขภาพ การสร้างเสริมสุขภาพ การให้ข้อมูลเพื่อการดูแลตนเองและบุตรหลังคลอด และการพิทักษ์สิทธิ']},
+  {n:'3.3',t:'การประเมินผลการปฏิบัติการพยาบาล — ระยะหลังคลอดและการดูแลต่อเนื่อง',
+   main:'ระยะหลังคลอดและการดูแลต่อเนื่อง',
+   m:'การประเมินผลการปฏิบัติการพยาบาล: พยาบาลวิชาชีพรวบรวมข้อมูลการเปลี่ยนแปลงของภาวะสุขภาพมารดาคลอดและทารกแรกเกิด เพื่อประเมินผลการปฏิบัติกิจกรรมการพยาบาล ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การประเมินผลสอดคล้องกับภาวะสุขภาพมารดาคลอดและทารกแรกเกิด การดูแลเฉพาะทางสูติกรรม',
+      '2) การประเมินผลครอบคลุมข้อวินิจฉัยทางการพยาบาล การวางแผนการพยาบาล และการปฏิบัติกิจกรรมการพยาบาล',
+      '3) การประเมินผลตามเวลาที่กำหนดไว้ในกิจกรรมการพยาบาล และครอบคลุมข้อมูลจากมารดาคลอด ครอบครัว และสหวิชาชีพ',
+      '4) การใช้ข้อมูลการประเมินผลเพื่อการปรับปรุงข้อวินิจฉัยทางการพยาบาล การวางแผนการพยาบาล และการปฏิบัติกิจกรรมการพยาบาล']},
+  {n:'3.4',t:'การบันทึกทางการพยาบาล — ระยะหลังคลอดและการดูแลต่อเนื่อง',
+   main:'ระยะหลังคลอดและการดูแลต่อเนื่อง',
+   m:'การบันทึกทางการพยาบาล: พยาบาลวิชาชีพบันทึกทางการพยาบาลหลังเสร็จสิ้นกระบวนการพยาบาล ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การบันทึกทางการพยาบาลตามหลักกระบวนการพยาบาล และการใช้สื่อสารภายในทีมการพยาบาลและระหว่างวิชาชีพที่เกี่ยวข้อง',
+      '2) การบันทึกทางการพยาบาลกระชับ (Concise) ถูกต้อง (Correct) ครบถ้วน (Complete) สอดคล้องกับปัญหาและความต้องการการพยาบาลอย่างเป็นองค์รวมของมารดาคลอดและทารกแรกเกิด สัมพันธ์กับการดูแลเฉพาะทางสูติกรรม',
+      '3) การบันทึกทางการพยาบาลเป็นลายลักษณ์อักษร อ่านได้ชัดเจน และใช้เป็นหลักฐานทางกฎหมายได้ (Clear)',
+      '4) การตรวจสอบความสมบูรณ์ของบันทึกทางการพยาบาลเป็นระยะ สม่ำเสมอ และการนำผลการตรวจสอบไปปรับปรุงคุณภาพการปฏิบัติการพยาบาล']}
+];
+
+const OI4 = [
+  {n:1,t:'ผลลัพธ์ด้านการนำองค์กร',dim:'มิติที่ 1',
+   m:'เกณฑ์ชี้วัดคุณภาพการพยาบาลผู้คลอด มิติที่ 1 ผลลัพธ์ด้านการนำองค์กร ดังนี้',
+   s:['1) ร้อยละของตัวชี้วัดวิสัยทัศน์ที่บรรลุเป้าหมาย',
+      '2) ร้อยละของโครงการ/กิจกรรมดำเนินการตามกระบวนการควบคุมภายในที่มีคะแนนความเสี่ยงลดลง',
+      '3) ร้อยละของบุคลากรพยาบาลที่มีผลการประเมินจริยธรรมจรรยาบรรณวิชาชีพผ่านเกณฑ์ที่กำหนด']},
+  {n:2,t:'ผลลัพธ์ด้านประสิทธิภาพ',dim:'มิติที่ 2',
+   m:'เกณฑ์ชี้วัดคุณภาพการพยาบาลผู้คลอด มิติที่ 2 ผลลัพธ์ด้านประสิทธิภาพ ดังนี้',
+   s:['1) ผลิตภาพของงานการพยาบาลผู้คลอด (Nursing Productivity)',
+      '2) ร้อยละของผู้คลอดที่มีภาวะฉุกเฉินได้รับการผ่าตัดคลอด/ส่งต่อภายใน 30 นาที',
+      '3) ร้อยละของบุคลากรพยาบาลที่มีจำนวนชั่วโมงการปฏิบัติงานการพยาบาลเฉลี่ยมากกว่า 60 ชั่วโมงต่อสัปดาห์',
+      '4) ร้อยละของอุบัติการณ์/ความเสี่ยงทางการพยาบาลได้รับการจัดการทันเวลาตามที่กำหนด']},
+  {n:3,t:'ผลลัพธ์ด้านผู้ใช้บริการ',dim:'มิติที่ 3',
+   m:'เกณฑ์ชี้วัดคุณภาพการพยาบาลผู้คลอด มิติที่ 3 ผลลัพธ์ด้านผู้ใช้บริการ ดังนี้',
+   s:['1) ร้อยละความพึงพอใจของผู้ใช้บริการต่อบริการพยาบาล',
+      '2) ร้อยละความพึงพอใจของผู้มีส่วนได้ส่วนเสียต่อหน่วยงานบริการพยาบาล',
+      '3) ร้อยละความไม่พึงพอใจของผู้ใช้บริการต่อบริการพยาบาล',
+      '4) จำนวนข้อร้องเรียนของผู้ใช้บริการเกี่ยวกับสิทธิหรือการละเมิดสิทธิผู้ใช้บริการ',
+      '5) จำนวนข้อร้องเรียนของผู้ใช้บริการเกี่ยวกับสิทธิหรือการละเมิดสิทธิผู้ใช้บริการกลุ่มเฉพาะ',
+      '6) จำนวนข้อร้องเรียนของผู้ใช้บริการเกี่ยวกับพฤติกรรมบริการของบุคลากรพยาบาล',
+      '7) จำนวนข้อร้องเรียนของผู้ใช้บริการเกี่ยวกับการละเมิดข้อมูลส่วนบุคคล',
+      '8) ร้อยละของการแก้ไขและ/หรือการตอบกลับข้อร้องเรียนของผู้ใช้บริการ']},
+  {n:4,t:'ผลลัพธ์ด้านบุคลากร',dim:'มิติที่ 4',
+   m:'เกณฑ์ชี้วัดคุณภาพการพยาบาลผู้คลอด มิติที่ 4 ผลลัพธ์ด้านบุคลากร ดังนี้',
+   s:['1) ร้อยละความผูกพันของบุคลากรพยาบาล',
+      '2) ร้อยละความพึงพอใจในงานและบรรยากาศองค์กรของบุคลากรพยาบาล',
+      '3) ร้อยละการโอนย้ายและลาออกของบุคลากรพยาบาล',
+      '4) ร้อยละของบุคลากรพยาบาลมีสมรรถนะตามบทบาทหน้าที่และสมรรถนะเฉพาะตามเกณฑ์ที่กำหนด',
+      '5) ร้อยละของบุคลากรพยาบาลได้รับการอบรมฟื้นฟูทักษะการช่วยฟื้นคืนชีพขั้นพื้นฐานอย่างน้อย 1 ครั้งต่อปี',
+      '6) ร้อยละของบุคลากรพยาบาลได้รับการอบรมฟื้นฟูทักษะการช่วยฟื้นคืนชีพขั้นสูงอย่างน้อย 1 ครั้งต่อปี',
+      '7) ร้อยละของบุคลากรพยาบาลได้รับการอบรมฟื้นฟูทักษะการป้องกันและควบคุมการติดเชื้อในโรงพยาบาลอย่างน้อย 1 ครั้งต่อปี',
+      '8) ร้อยละของบุคลากรพยาบาลที่ได้รับการตรวจสุขภาพประจำปีและตามความเสี่ยงจากการทำงาน',
+      '9) ร้อยละของบุคลากรพยาบาลที่เจ็บป่วยหรือเกิดอุบัติเหตุจากการปฏิบัติงานได้รับการดูแลตามแนวทางการดูแลรักษา']},
+  {n:5,t:'ผลลัพธ์ด้านระบบงานและกระบวนการสำคัญ',dim:'มิติที่ 5',
+   m:'เกณฑ์ชี้วัดคุณภาพการพยาบาลผู้คลอด มิติที่ 5 ผลลัพธ์ด้านระบบงานและกระบวนการสำคัญ ดังนี้',
+   s:['1) ร้อยละของบุคลากรพยาบาลที่ปฏิบัติตามแนวทางปฏิบัติการพยาบาล',
+      '2) ร้อยละของการบันทึกทางการพยาบาลตามเกณฑ์มาตรฐานการพยาบาลในโรงพยาบาล',
+      '3) ร้อยละของอุบัติการณ์ภัยพิบัติหรือภาวะฉุกเฉินได้รับการจัดการตามกระบวนการที่กำหนด',
+      '4) ร้อยละของฐานข้อมูลจำเป็นตามมาตรฐานการพยาบาลในโรงพยาบาลที่นำมาใช้ประโยชน์ทางการพยาบาล',
+      '5) ร้อยละขององค์ความรู้และ/หรือนวัตกรรมทางการพยาบาลที่พัฒนาด้วยการจัดการความรู้และนำไปใช้',
+      '6) จำนวนอุบัติการณ์ความไม่พร้อมต่อการช่วยชีวิตฉุกเฉิน',
+      '7) จำนวนอุบัติการณ์ไม่พึงประสงค์จากการบริหารจัดการยาเสพติดให้โทษประเภท 2']},
+  {n:6,t:'ผลลัพธ์ด้านการบริการพยาบาลผู้คลอด',dim:'มิติที่ 6',
+   m:'เกณฑ์ชี้วัดคุณภาพการพยาบาลผู้คลอด มิติที่ 6 ผลลัพธ์ด้านการบริการพยาบาล ดังนี้',
+   s:['1) ร้อยละของมารดาคลอดและทารกแรกเกิดที่อยู่ในภาวะคุกคามชีวิตได้รับการแก้ไขทันทีภายใน 4 นาที',
+      '2) อัตราการเกิดอาการเปลี่ยนแปลงของมารดาคลอดและทารกแรกเกิดโดยไม่ได้คาดการณ์',
+      '3) อัตราการเกิดภาวะแทรกซ้อนที่ป้องกันได้ของมารดาคลอดและทารกแรกเกิด',
+      '4) ร้อยละของความคลาดเคลื่อนจากการบริหารยา/สารน้ำมีความรุนแรงระดับ E-I',
+      '5) ร้อยละของความคลาดเคลื่อนจากการให้เลือดมีความรุนแรงระดับ E-I',
+      '6) จำนวนอุบัติการณ์การระบุตัวผู้ป่วยผิดคน',
+      '7) จำนวนอุบัติการณ์การระบุเพศทารกผิด/ส่งทารกให้แม่ผิดคน',
+      '8) ร้อยละของการพลัดตกหกล้มมีความรุนแรงระดับ E-I',
+      '9) อัตราการเกิดการบาดเจ็บจากการจัดท่า ผูกยึด หรือการใช้อุปกรณ์และเครื่องมือ',
+      '10) อัตราการติดเชื้อแผลฝีเย็บ',
+      '11) อัตราการติดเชื้อสะดือ/ตาทารก',
+      '12) ร้อยละของมารดาคลอดที่มีความรู้และทักษะการจัดการสุขภาพตนเองหลังคลอด']}
+];
+
+const PC4=['A','D','L','I'], OC4=['Le','T','C','I'];
+const PB4={A:'ba',D:'bd',L:'bl',I:'bi'}, OB4={Le:'ble',T:'bt',C:'bc',I:'bi'};
+const PR4={A:'ra',D:'rd',L:'rl',I:'ri'}, OR4={Le:'rle',T:'rt',C:'rc',I:'ri'};
+
+function buildTables4(){
+  const p4b=document.getElementById('p4Body'); if(!p4b)return;
+  PI4.forEach(item=>{
+    const hr=document.createElement('tr'); hr.className='ihead';
+    hr.innerHTML=`<td colspan="10"><span class="inb">ข้อ ${item.n}</span><strong>${item.t}</strong><span class="istandard">(${item.std})</span></td>`;
+    p4b.appendChild(hr);
+    PC4.forEach((cr,ci)=>{
+      const row=document.createElement('tr'); row.className=PR4[cr];
+      const desc=cr==='A'?`<span class="main-desc">${item.m}</span>`:(item.s[ci-1]?`<span class="sub-desc">${item.s[ci-1]}</span>`:'<span class="sub-desc" style="color:#bbb">—</span>');
+      row.innerHTML=`${ci===0?`<td class="cnm" rowspan="4">${item.n}</td>`:''}
+        <td class="cdesc">${desc}</td><td class="ccrit"><span class="badge ${PB4[cr]}">${cr}</span></td>
+        ${[0,1,2,3,4,5].map(v=>`<td class="csc"><label class="scl"><input type="radio" name="p4${item.n}_${cr}" value="${v}" onchange="onSc4()"><span class="sb">${v}</span></label></td>`).join('')}
+        ${ci===0?`<td class="ctot" rowspan="4"><span class="iscore" style="color:#ad1457" id="p4S${item.n}">—</span><span class="iscore-max">/5</span></td>`:''}`;
+      p4b.appendChild(row);
+    });
+  });
+  const q4b=document.getElementById('q4Body'); let lastMain='';
+  QI4.forEach(item=>{
+    if(item.main!==lastMain){
+      lastMain=item.main;
+      const mhr=document.createElement('tr');
+      mhr.innerHTML=`<td colspan="10" style="background:#f48fb1;padding:9px 14px;font-weight:800;color:#880e4f;font-size:14px;border-top:3px solid #e91e63">👶 ${item.main}</td>`;
+      q4b.appendChild(mhr);
+    }
+    const hr=document.createElement('tr');
+    hr.innerHTML=`<td colspan="10" style="background:#fce4ec;padding:8px 14px;font-size:13.5px;border-top:1.5px solid #f48fb1">
+      <span class="inb" style="background:#ad1457">ข้อ ${item.n}</span><strong>${item.t}</strong></td>`;
+    q4b.appendChild(hr);
+    const nk=item.n.replace('.','_');
+    PC4.forEach((cr,ci)=>{
+      const row=document.createElement('tr'); row.className=PR4[cr];
+      const desc=cr==='A'?`<span class="main-desc">${item.m}</span>`:(item.s[ci-1]?`<span class="sub-desc">${item.s[ci-1]}</span>`:'<span class="sub-desc" style="color:#bbb">—</span>');
+      row.innerHTML=`${ci===0?`<td class="cnm" rowspan="4" style="color:#ad1457">${item.n}</td>`:''}
+        <td class="cdesc">${desc}</td><td class="ccrit"><span class="badge ${PB4[cr]}">${cr}</span></td>
+        ${[0,1,2,3,4,5].map(v=>`<td class="csc"><label class="scl"><input type="radio" name="q4${nk}_${cr}" value="${v}" onchange="onSc4()"><span class="sb">${v}</span></label></td>`).join('')}
+        ${ci===0?`<td class="ctot" rowspan="4"><span class="iscore" style="color:#ad1457" id="q4S${nk}">—</span><span class="iscore-max">/5</span></td>`:''}`;
+      q4b.appendChild(row);
+    });
+  });
+  const o4b=document.getElementById('o4Body');
+  OI4.forEach(item=>{
+    const hr=document.createElement('tr'); hr.className='ihead o-ihead';
+    hr.innerHTML=`<td colspan="10"><span class="inb o-inb">ข้อ ${item.n}</span><strong>${item.t}</strong><span class="dim-tag">${item.dim}</span></td>`;
+    o4b.appendChild(hr);
+    OC4.forEach((cr,ci)=>{
+      const row=document.createElement('tr'); row.className=OR4[cr]||'ri';
+      let desc='';
+      if(cr==='Le') desc=`<span class="main-desc">${item.m}</span>`;
+      else if(cr==='T'){const b=item.s.slice(0,3);desc=b.length?`<ul class="sub-list">${b.map(x=>`<li>${x}</li>`).join('')}</ul>`:'<span style="color:#bbb">—</span>';}
+      else if(cr==='C'){const b=item.s.slice(3,6);desc=b.length?`<ul class="sub-list">${b.map(x=>`<li>${x}</li>`).join('')}</ul>`:'<span style="color:#bbb">—</span>';}
+      else{const b=item.s.slice(6);desc=b.length?`<ul class="sub-list">${b.map(x=>`<li>${x}</li>`).join('')}</ul>`:'<span style="color:#bbb">—</span>';}
+      row.innerHTML=`${ci===0?`<td class="cnm o-cnm" rowspan="4">${item.n}</td>`:''}
+        <td class="cdesc">${desc}</td><td class="ccrit"><span class="badge ${OB4[cr]}">${cr}</span></td>
+        ${[0,1,2,3,4,5].map(v=>`<td class="csc"><label class="scl"><input type="radio" name="o4${item.n}_${cr}" value="${v}" onchange="onSc4()"><span class="sb">${v}</span></label></td>`).join('')}
+        ${ci===0?`<td class="ctot" rowspan="4"><span class="iscore o-iscore" id="o4S${item.n}">—</span><span class="iscore-max">/5</span></td>`:''}`;
+      o4b.appendChild(row);
+    });
+  });
+}
+
+function gV4(pf,n,cr){const el=document.querySelector(`input[name="${pf}${n}_${cr}"]:checked`);return el?parseFloat(el.value):null;}
+function cI4(pf,n,isOut){
+  const cr=isOut?OC4:PC4,anch=isOut?'Le':'A';
+  const vs={};let ok=true;
+  cr.forEach(c=>{const v=gV4(pf,n,c);if(v===null)ok=false;vs[c]=v;});
+  if(!ok)return null;if(vs[anch]===0)return 0;
+  return Math.min(cr.reduce((s,c)=>s+vs[c],0)/4,vs[anch]);
+}
+function onSc4(){
+  let p1=0,p2=0,o4=0;
+  PI4.forEach(item=>{const s=cI4('p4',item.n,false);const el=document.getElementById('p4S'+item.n);if(el)el.textContent=s!==null?s.toFixed(2):'—';if(s!==null)p1+=s;});
+  QI4.forEach(item=>{const nk=item.n.replace('.','_');const s=cI4('q4',nk,false);const el=document.getElementById('q4S'+nk);if(el)el.textContent=s!==null?s.toFixed(2):'—';if(s!==null)p2+=s;});
+  OI4.forEach(item=>{const s=cI4('o4',item.n,true);const el=document.getElementById('o4S'+item.n);if(el)el.textContent=s!==null?s.toFixed(2):'—';if(s!==null)o4+=s;});
+  document.getElementById('p4Total').textContent=p1.toFixed(2);document.getElementById('p4Pct').textContent=((p1/70)*100).toFixed(1);
+  document.getElementById('q4Total').textContent=p2.toFixed(2);document.getElementById('q4Pct').textContent=((p2/60)*100).toFixed(1);
+  document.getElementById('o4Total').textContent=o4.toFixed(2);document.getElementById('o4Pct').textContent=((o4/30)*100).toFixed(1);
+  const grand=p1+p2+o4,pct=(grand/160)*100;
+  document.getElementById('g4P1').textContent=p1.toFixed(2);document.getElementById('g4P2').textContent=p2.toFixed(2);
+  document.getElementById('g4O').textContent=o4.toFixed(2);document.getElementById('g4T').textContent=grand.toFixed(2);
+  document.getElementById('g4Pct').textContent=pct.toFixed(1)+'%';document.getElementById('pFill4').style.width=pct+'%';
+  const r=INTERP.find(x=>pct<=x.max)||INTERP[INTERP.length-1];
+  const l=document.getElementById('iLvl4');l.textContent=r.lvl;l.style.background=r.bg;l.style.color='#fff';
+  document.getElementById('iTxt4').textContent=r.txt;
+  try{autoSave();}catch(e){}
+}
+function calcAll4(){onSc4();buildResult4();document.getElementById('grandSection4').scrollIntoView({behavior:'smooth'});}
+
+function buildResult4(){
+  const rb=document.getElementById('r4Body');rb.innerHTML='';
+  const ph=rb.insertRow();ph.style.background='#d6eaf8';
+  ph.innerHTML=`<td colspan="8" style="font-weight:700;color:#1a5276;padding:9px 14px">⚙️ ส่วนที่ 1 : มิติกระบวนการบริหาร (14 ข้อ / 70 คะแนน)</td>`;
+  let p1=0;
+  PI4.forEach(item=>{
+    const s=cI4('p4',item.n,false);if(s!==null)p1+=s;
+    const cA=gV4('p4',item.n,'A'),cD=gV4('p4',item.n,'D'),cL=gV4('p4',item.n,'L'),cI_=gV4('p4',item.n,'I');
+    const lv=s!==null?Math.min(Math.round(s),5):0;
+    const r=rb.insertRow();
+    r.innerHTML=`<td style="text-align:center;font-weight:700">${item.n}</td><td style="font-size:13px">${item.t}</td>
+      <td style="text-align:center">${cA!==null?cA:'—'}</td><td style="text-align:center">${cD!==null?cD:'—'}</td>
+      <td style="text-align:center">${cL!==null?cL:'—'}</td><td style="text-align:center">${cI_!==null?cI_:'—'}</td>
+      <td style="text-align:center;font-weight:700">${s!==null?s.toFixed(2):'—'}</td>
+      <td style="text-align:center"><span class="lvc lv${lv}">${s!==null?LN[lv]:'—'}</span></td>`;
+  });
+  const psr=rb.insertRow();psr.style.background='#eaf2fb';
+  psr.innerHTML=`<td colspan="6" style="text-align:right;font-weight:700;padding:8px 14px">รวมส่วนที่ 1</td><td style="text-align:center;font-weight:800;color:#1a5276">${p1.toFixed(2)}/70</td><td style="text-align:center;font-weight:700">${((p1/70)*100).toFixed(1)}%</td>`;
+  const qh=rb.insertRow();qh.style.background='#fce4ec';
+  qh.innerHTML=`<td colspan="8" style="font-weight:700;color:#ad1457;padding:9px 14px">👶 ส่วนที่ 2 : มิติกระบวนการปฏิบัติ (12 ข้อ / 60 คะแนน)</td>`;
+  let p2=0;
+  QI4.forEach(item=>{
+    const nk=item.n.replace('.','_');const s=cI4('q4',nk,false);if(s!==null)p2+=s;
+    const cA=gV4('q4',nk,'A'),cD=gV4('q4',nk,'D'),cL=gV4('q4',nk,'L'),cI_=gV4('q4',nk,'I');
+    const lv=s!==null?Math.min(Math.round(s),5):0;
+    const r=rb.insertRow();
+    r.innerHTML=`<td style="text-align:center;font-weight:700">${item.n}</td><td style="font-size:12.5px">${item.t}</td>
+      <td style="text-align:center">${cA!==null?cA:'—'}</td><td style="text-align:center">${cD!==null?cD:'—'}</td>
+      <td style="text-align:center">${cL!==null?cL:'—'}</td><td style="text-align:center">${cI_!==null?cI_:'—'}</td>
+      <td style="text-align:center;font-weight:700">${s!==null?s.toFixed(2):'—'}</td>
+      <td style="text-align:center"><span class="lvc lv${lv}">${s!==null?LN[lv]:'—'}</span></td>`;
+  });
+  const qsr=rb.insertRow();qsr.style.background='#fce4ec';
+  qsr.innerHTML=`<td colspan="6" style="text-align:right;font-weight:700;padding:8px 14px">รวมส่วนที่ 2</td><td style="text-align:center;font-weight:800;color:#ad1457">${p2.toFixed(2)}/60</td><td style="text-align:center;font-weight:700">${((p2/60)*100).toFixed(1)}%</td>`;
+  const oh=rb.insertRow();oh.style.background='#d5f5e3';
+  oh.innerHTML=`<td colspan="8" style="font-weight:700;color:#1e5631;padding:9px 14px">📊 ส่วนที่ 3 : มิติผลลัพธ์ (6 ข้อ / 30 คะแนน)</td>`;
+  let o4=0;
+  OI4.forEach(item=>{
+    const s=cI4('o4',item.n,true);if(s!==null)o4+=s;
+    const cL=gV4('o4',item.n,'Le'),cT=gV4('o4',item.n,'T'),cC=gV4('o4',item.n,'C'),cI_=gV4('o4',item.n,'I');
+    const lv=s!==null?Math.min(Math.round(s),5):0;
+    const r=rb.insertRow();
+    r.innerHTML=`<td style="text-align:center;font-weight:700">${item.n}</td><td style="font-size:13px">${item.t} (${item.dim})</td>
+      <td style="text-align:center">${cL!==null?cL:'—'}</td><td style="text-align:center">${cT!==null?cT:'—'}</td>
+      <td style="text-align:center">${cC!==null?cC:'—'}</td><td style="text-align:center">${cI_!==null?cI_:'—'}</td>
+      <td style="text-align:center;font-weight:700">${s!==null?s.toFixed(2):'—'}</td>
+      <td style="text-align:center"><span class="lvc lv${lv}">${s!==null?LN[lv]:'—'}</span></td>`;
+  });
+  const osr=rb.insertRow();osr.style.background='#e8f8f0';
+  osr.innerHTML=`<td colspan="6" style="text-align:right;font-weight:700;padding:8px 14px">รวมส่วนที่ 3</td><td style="text-align:center;font-weight:800;color:#1e8449">${o4.toFixed(2)}/30</td><td style="text-align:center;font-weight:700">${((o4/30)*100).toFixed(1)}%</td>`;
+  const grand=p1+p2+o4;
+  const gr=rb.insertRow();gr.style.borderTop='3px solid #ad1457';
+  gr.innerHTML=`<td colspan="6" style="text-align:right;font-weight:800;padding:11px 14px;font-size:15px;background:#fce4ec">🏆 คะแนนรวมทั้งหมด</td>
+    <td style="text-align:center;font-weight:800;font-size:15px;color:#ad1457;background:#fce4ec">${grand.toFixed(2)}/160<br><small>(${((grand/160)*100).toFixed(1)}%)</small></td>
+    <td style="text-align:center;font-weight:800;font-size:16px;background:#fce4ec">${((grand/160)*100).toFixed(1)}%</td>`;
+}
+
+function resetAll4(){
+  if(!confirm('รีเซ็ตแบบประเมิน LR ทั้งหมด?'))return;
+  document.querySelectorAll('#m4 input[type=radio]').forEach(r=>r.checked=false);
+  document.querySelectorAll('[id^=p4S],[id^=q4S],[id^=o4S]').forEach(e=>e.textContent='—');
+  ['p4Total','q4Total','o4Total','p4Pct','q4Pct','o4Pct','g4P1','g4P2','g4O'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent='0.00';});
+  document.getElementById('g4T').textContent='0.00';document.getElementById('g4Pct').textContent='0.0%';
+  document.getElementById('pFill4').style.width='0%';
+  document.getElementById('iLvl4').textContent='—';document.getElementById('iLvl4').style.background='#ffd700';document.getElementById('iLvl4').style.color='#1a2530';
+  document.getElementById('iTxt4').textContent='กรุณากรอกแบบประเมินครบทุกข้อ แล้วกดปุ่ม "คำนวณคะแนน"';
+  document.getElementById('r4Body').innerHTML='<tr><td colspan="8" style="text-align:center;color:#aaa;padding:20px">กรุณากดปุ่ม "คำนวณคะแนน" เพื่อดูผลสรุป</td></tr>';
+}
+function exportCSV4(){
+  let csv='\ufeffข้อ,รายการประเมิน,ส่วน,A/Le,D/T,L/C,I,คะแนนข้อ\n';
+  PI4.forEach(item=>{const s=cI4('p4',item.n,false);csv+=`${item.n},"${item.t}",ส่วนที่1,${gV4('p4',item.n,'A')??''},${gV4('p4',item.n,'D')??''},${gV4('p4',item.n,'L')??''},${gV4('p4',item.n,'I')??''},${s!==null?s.toFixed(2):''}\n`;});
+  QI4.forEach(item=>{const nk=item.n.replace('.','_');const s=cI4('q4',nk,false);csv+=`${item.n},"${item.t}",ส่วนที่2,${gV4('q4',nk,'A')??''},${gV4('q4',nk,'D')??''},${gV4('q4',nk,'L')??''},${gV4('q4',nk,'I')??''},${s!==null?s.toFixed(2):''}\n`;});
+  OI4.forEach(item=>{const s=cI4('o4',item.n,true);csv+=`${item.n},"${item.t}",ส่วนที่3,${gV4('o4',item.n,'Le')??''},${gV4('o4',item.n,'T')??''},${gV4('o4',item.n,'C')??''},${gV4('o4',item.n,'I')??''},${s!==null?s.toFixed(2):''}\n`;});
+  const b=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`KSK_LR_QA_${new Date().toISOString().slice(0,10)}.csv`;a.click();
 }
 
 </script>
