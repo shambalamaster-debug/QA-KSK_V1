@@ -335,6 +335,27 @@ table.rtbl tr:nth-child(odd) td{background:#f8f9fa}
     <div class="sl-auto"><span class="sl-dot"></span><span id="autoSaveStatus">บันทึกอัตโนมัติทุกครั้งที่ตอบ</span></div>
   </div>
 
+  <!-- STORAGE PANEL M1 -->
+  <div class="storage-panel" id="storagePanel1">
+    <div class="sp-head" onclick="toggleSP('1')">
+      <h3>🗄️ นโยบายการจัดเก็บข้อมูลการประเมิน — ข้อมูลเก็บที่ไหน? ใครเข้าถึงได้? แก้ไขได้หรือไม่?</h3>
+      <span class="sp-tog" id="spTog1">▼</span>
+    </div>
+    <div class="sp-body" id="spBody1">
+      <div class="sp-grid">
+        <div class="sp-card blue"><div class="sp-title">📍 เก็บข้อมูลที่ไหน?</div><ul><li><strong>localStorage</strong> ของเบราว์เซอร์บนเครื่องผู้ใช้งานโดยตรง ไม่มีเซิร์ฟเวอร์กลาง</li></ul></div>
+        <div class="sp-card green"><div class="sp-title">⏳ เก็บได้นานแค่ไหน?</div><ul><li>เก็บ<strong>ถาวร</strong> จนกว่าจะลบเอง ⚠️ ล้าง Cache → <strong>ข้อมูลหาย</strong> ควร Export JSON สำรอง</li></ul></div>
+        <div class="sp-card yellow"><div class="sp-title">👤 ใครเข้าถึงได้?</div><ul><li><strong>เฉพาะผู้ใช้เครื่องนั้น</strong> เท่านั้น ข้อมูลไม่ถูกส่งออกอินเทอร์เน็ต</li></ul></div>
+        <div class="sp-card red"><div class="sp-title">✏️ แก้ไขได้หรือไม่?</div><ul><li>โหลดกลับมา → <strong>แก้ไขได้</strong> → บันทึกใหม่ | View: <strong>read-only</strong></li></ul></div>
+      </div>
+      <div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:8px">
+        <span class="sp-tag local">🔒 localStorage (เฉพาะเครื่อง)</span>
+        <span class="sp-tag export">📤 JSON Export (ไฟล์สำรอง)</span>
+        <button onclick="calcStorageUsage('1')" style="padding:4px 12px;background:var(--pry);color:#fff;border:none;border-radius:6px;font-family:inherit;font-size:12px;cursor:pointer;margin-left:auto">🔄 อัปเดตพื้นที่</button>
+      </div>
+    </div>
+  </div>
+
   <div class="btn-row">
     <button class="btn b-p" onclick="calcAll()">🔢 คำนวณคะแนน</button>
     <button class="btn b-g" onclick="window.print()">🖨️ พิมพ์แบบประเมิน</button>
@@ -1489,37 +1510,433 @@ table.rtbl tr:nth-child(odd) td{background:#f8f9fa}
 
 </div>
 <div id="m5" style="display:none">
-  <div class="cs-wrap">
-    <div class="status-badge status-soon">⏳ รอรับข้อมูลจากหนังสือเล่ม 5</div>
-    <div class="cs-ico">🛏️</div>
-    <h3>มาตรฐานและการประเมินคุณภาพการบริการพยาบาลผู้ป่วยใน</h3>
-    <p class="cs-std">แบบประเมินสำหรับหอผู้ป่วยในทุกประเภท ครอบคลุมกระบวนการพยาบาลองค์รวม การดูแลต่อเนื่อง<br>ความปลอดภัยของผู้ป่วย (Patient Safety Goals) และคุณภาพการบันทึกทางการพยาบาล</p>
-    <div class="cs-book"><span class="bk-num">เล่ม 5</span><span>มาตรฐานและการประเมินคุณภาพ<br>การบริการพยาบาลผู้ป่วยใน</span></div><br>
-    <div class="cs-info">
-      <p><strong>📚 หนังสืออ้างอิง :</strong> มาตรฐานและการประเมินคุณภาพการบริการพยาบาลผู้ป่วยใน (เล่ม 5)</p>
-      <p><strong>🏥 หน่วยงานที่ใช้ :</strong> งานการพยาบาลผู้ป่วยใน (IPD) / หอผู้ป่วยอายุรกรรม ศัลยกรรม โรงพยาบาลเขาสุกิม</p>
-      <p><strong>📋 โครงสร้างการประเมิน :</strong> มิติกระบวนการ (ADLI) + มิติผลลัพธ์ (Le/T/C/I) = 100 คะแนน</p>
-      <p><strong>📌 วิธีเพิ่มโมดูลนี้ :</strong> อัปโหลดหนังสือเล่ม 5 เพื่อให้นำข้อมูลแบบประเมินมาใส่ในโปรแกรม</p>
+  <div class="sl-bar">
+    <span>💾 จัดการข้อมูลการประเมิน :</span>
+    <button class="sl-btn sl-save" onclick="openSaveModal('m5')">💾 บันทึกผลการประเมิน</button>
+    <button class="sl-btn sl-load" onclick="openLoadModal('m5')">📂 เรียกดู / โหลดข้อมูล</button>
+    <button class="sl-btn sl-import" onclick="openImportModal()">📥 นำเข้าไฟล์ JSON</button>
+    <div class="sl-auto"><span class="sl-dot"></span><span id="autoSaveStatus5">บันทึกอัตโนมัติทุกครั้งที่ตอบ</span></div>
+  </div>
+  <div class="btn-row">
+    <button class="btn b-p" onclick="calcAll5()">🔢 คำนวณคะแนน</button>
+    <button class="btn b-g" onclick="window.print()">🖨️ พิมพ์แบบประเมิน</button>
+    <button class="btn b-o" onclick="exportCSV5()">📊 ส่งออก CSV</button>
+    <button class="btn b-r" onclick="resetAll5()">🔄 เริ่มใหม่</button>
+    <button class="btn b-w" onclick="document.getElementById('grandSection5').scrollIntoView({behavior:'smooth'})">📋 ดูสรุปผล</button>
+  </div>
+  <div class="storage-panel" id="storagePanel5">
+    <div class="sp-head" onclick="toggleSP('5')">
+      <h3>🗄️ นโยบายการจัดเก็บข้อมูลการประเมิน — ข้อมูลเก็บที่ไหน? ใครเข้าถึงได้? แก้ไขได้หรือไม่?</h3>
+      <span class="sp-tog" id="spTog5">▼</span>
+    </div>
+    <div class="sp-body" id="spBody5">
+      <div class="sp-grid">
+        <div class="sp-card blue"><div class="sp-title">📍 เก็บข้อมูลที่ไหน?</div><ul><li><strong>localStorage</strong> ของเบราว์เซอร์บนเครื่องผู้ใช้งานโดยตรง</li><li>ไม่มีเซิร์ฟเวอร์กลาง</li></ul></div>
+        <div class="sp-card green"><div class="sp-title">⏳ เก็บได้นานแค่ไหน?</div><ul><li>เก็บ<strong>ถาวร</strong> จนกว่าจะลบเอง</li><li>⚠️ ล้าง Cache → <strong>ข้อมูลหาย</strong> ควร Export JSON</li></ul></div>
+        <div class="sp-card yellow"><div class="sp-title">👤 ใครเข้าถึงได้?</div><ul><li><strong>เฉพาะผู้ใช้เครื่องนั้น</strong> เท่านั้น</li></ul></div>
+        <div class="sp-card red"><div class="sp-title">✏️ แก้ไขได้หรือไม่?</div><ul><li>โหลดกลับมา → <strong>แก้ไขได้</strong></li><li>View: <strong>read-only</strong></li></ul></div>
+      </div>
+      <div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:8px"><span class="sp-tag local">🔒 localStorage</span><span class="sp-tag export">📤 JSON Export</span><button onclick="calcStorageUsage('5')" style="padding:4px 12px;background:var(--pry);color:#fff;border:none;border-radius:6px;font-family:inherit;font-size:12px;cursor:pointer;margin-left:auto">🔄 อัปเดตพื้นที่</button></div>
     </div>
   </div>
+  <div class="card">
+    <div class="card-head">📋 ข้อมูลการประเมิน — มาตรฐานและการประเมินคุณภาพการบริการพยาบาลผู้ป่วยใน</div>
+    <div class="card-body">
+      <div class="info-grid">
+        <div><label class="f-lbl">วันที่ประเมิน</label><input class="f-inp" type="date" id="aDate5"></div>
+        <div><label class="f-lbl">ปีงบประมาณ</label><input class="f-inp" type="text" id="aYear5" value="2568"></div>
+        <div><label class="f-lbl">ชื่อผู้ประเมิน</label><input class="f-inp" type="text" id="aName5" placeholder="ชื่อ-สกุล"></div>
+        <div><label class="f-lbl">ตำแหน่ง</label><input class="f-inp" type="text" id="aPos5" value="พยาบาลวิชาชีพ / หัวหน้างาน IPD"></div>
+        <div><label class="f-lbl">หน่วยงาน</label><input class="f-inp" type="text" id="aDept5" value="งานการพยาบาลผู้ป่วยใน โรงพยาบาลเขาสุกิม"></div>
+        <div><label class="f-lbl">ประเภทการประเมิน</label>
+          <select class="f-sel" id="aType5">
+            <option>ประเมินภายใน (Self Assessment)</option>
+            <option>ทีมประกันคุณภาพโรงพยาบาล</option>
+            <option>ทีมประกันคุณภาพระดับจังหวัด</option>
+            <option>ประเมินภายนอก</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="guide-card">
+    <div class="guide-hd" onclick="tg('gBody5','gTog5')">
+      <h3>📖 คำอธิบายวิธีการให้คะแนนและเกณฑ์การประเมิน (คลิกเพื่อแสดง/ซ่อน)</h3>
+      <span class="gtog" id="gTog5">▼</span>
+    </div>
+    <div class="guide-bd" id="gBody5">
+      <div class="guide-tabs">
+        <button class="gtab active" onclick="showGCx('gc5_1',this,'m5')">มิติกระบวนการ (ADLI)</button>
+        <button class="gtab" onclick="showGCx('gc5_2',this,'m5')">มิติผลลัพธ์ (Le/T/C/I)</button>
+        <button class="gtab" onclick="showGCx('gc5_3',this,'m5')">วิธีคำนวณ IPD</button>
+        <button class="gtab" onclick="showGCx('gc5_4',this,'m5')">การแปลผล</button>
+      </div>
+      <div id="gc5_1" class="gc show">
+        <table class="gtbl"><thead><tr><th>คะแนน</th><th>ระดับ</th><th>แนวทางการพิจารณา</th></tr></thead><tbody>
+          <tr><td><span class="sbg" style="background:var(--s0)">0</span></td><td>No Evidence</td><td>ไม่มีการดำเนินการ A, D, L, I / ไม่มีหลักฐาน</td></tr>
+          <tr><td><span class="sbg" style="background:var(--s1)">1</span></td><td>Beginning</td><td>มีการดำเนินการเป็นส่วนน้อย (น้อยกว่าครึ่งหนึ่ง)</td></tr>
+          <tr><td><span class="sbg" style="background:var(--s2)">2</span></td><td>Basically Effectiveness</td><td>มีการดำเนินการเป็นส่วนใหญ่ (มากกว่าครึ่งหนึ่ง)</td></tr>
+          <tr><td><span class="sbg" style="background:var(--s3)">3</span></td><td>Mature</td><td>มีการดำเนินการตามข้อกำหนดของมาตรฐานอย่างครบถ้วน</td></tr>
+          <tr><td><span class="sbg" style="background:var(--s4)">4</span></td><td>Advance</td><td>มีการดำเนินการอย่างเป็นระบบ เพิ่มมากกว่าข้อกำหนดของมาตรฐาน</td></tr>
+          <tr><td><span class="sbg" style="background:var(--s5)">5</span></td><td>Role Model</td><td>มีการดำเนินการเหนือมาตรฐาน เป็นแนวทางที่พิสูจน์ได้ว่านำสู่ความเป็นเลิศ</td></tr>
+        </tbody></table>
+        <p style="font-size:12px;color:#888;margin-top:8px"><b>A</b>=Approach | <b>D</b>=Deployment | <b>L</b>=Learning | <b>I</b>=Integration</p>
+      </div>
+      <div id="gc5_2" class="gc">
+        <table class="gtbl"><thead><tr><th>คะแนน</th><th>ระดับ</th><th>ร้อยละตัวชี้วัดที่แสดง Le,T,C,I ที่ดี</th></tr></thead><tbody>
+          <tr><td><span class="sbg" style="background:var(--s0)">0</span></td><td>No Evidence</td><td>ไม่มีรายงานข้อมูล</td></tr>
+          <tr><td><span class="sbg" style="background:var(--s1)">1</span></td><td>Beginning</td><td>ร้อยละ 1–20</td></tr>
+          <tr><td><span class="sbg" style="background:var(--s2)">2</span></td><td>Basically</td><td>ร้อยละ 21–40</td></tr>
+          <tr><td><span class="sbg" style="background:var(--s3)">3</span></td><td>Mature</td><td>ร้อยละ 41–60</td></tr>
+          <tr><td><span class="sbg" style="background:var(--s4)">4</span></td><td>Advance</td><td>ร้อยละ 61–80</td></tr>
+          <tr><td><span class="sbg" style="background:var(--s5)">5</span></td><td>Role Model</td><td>ร้อยละ 81–100</td></tr>
+        </tbody></table>
+        <p style="font-size:12px;color:#888;margin-top:8px"><b>Le</b>=Level | <b>T</b>=Trend | <b>C</b>=Comparison | <b>I</b>=Integration</p>
+      </div>
+      <div id="gc5_3" class="gc">
+        <div style="background:#e8f4f8;border-radius:7px;padding:13px;font-size:13.5px">
+          <p>🛏️ <b>โครงสร้างคะแนน IPD (เล่ม 5) รวม 160 คะแนน</b></p>
+          <ul style="margin:7px 0 0 18px;line-height:2;font-size:13px">
+            <li>ส่วนที่ 1 มิติกระบวนการบริหาร (14 ข้อ × 5) = <b>70 คะแนน</b></li>
+            <li>ส่วนที่ 2 มิติกระบวนการปฏิบัติ 3 ระยะ (12 ข้อ × 5) = <b>60 คะแนน</b></li>
+            <li>ส่วนที่ 3 มิติผลลัพธ์ (6 ข้อ × 5) = <b>30 คะแนน</b></li>
+            <li>คะแนนรายข้อ = <b>min((A+D+L+I)÷4, A)</b> หรือ <b>min((Le+T+C+I)÷4, Le)</b></li>
+            <li>ร้อยละ = (คะแนนรวม ÷ <b>160</b>) × 100</li>
+          </ul>
+        </div>
+      </div>
+      <div id="gc5_4" class="gc">
+        <table class="gtbl"><thead><tr><th>ร้อยละ</th><th>ระดับ</th><th>ลักษณะหน่วยงานบริการพยาบาล</th></tr></thead><tbody>
+          <tr><td>0–30</td><td><span class="lvc lv1">Beginning</span></td><td>เริ่มต้น กระบวนการยังไม่เป็นระบบ</td></tr>
+          <tr><td>30.01–40</td><td><span class="lvc lv2">Basically Effectiveness</span></td><td>ตอบสนองข้อกำหนดบางส่วน</td></tr>
+          <tr><td>40.01–50</td><td><span class="lvc lv3">Mature (ระดับ 1)</span></td><td>ตอบสนองข้อกำหนดเป็นส่วนใหญ่</td></tr>
+          <tr><td>50.01–60</td><td><span class="lvc lv3">Mature (ระดับ 2)</span></td><td>ตอบสนองข้อกำหนดอย่างครบถ้วน</td></tr>
+          <tr><td>60.01–70</td><td><span class="lvc lv4">Advanced (ระดับ 1)</span></td><td>ตอบสนองมาตรฐาน มีนวัตกรรม</td></tr>
+          <tr><td>70.01–80</td><td><span class="lvc lv4">Advanced (ระดับ 2)</span></td><td>ปฏิบัติตามมาตรฐานเป็นเลิศ</td></tr>
+          <tr><td>80.01–90</td><td><span class="lvc lv5">Role Model (ระดับ 1)</span></td><td>เหนือมาตรฐาน เป็นต้นแบบ</td></tr>
+          <tr><td>90.01–100</td><td><span class="lvc lv5">Role Model (ระดับ 2)</span></td><td>เหนือมาตรฐาน เป็นเลิศระดับชาติ</td></tr>
+        </tbody></table>
+      </div>
+    </div>
+  </div>
+  <div style="background:#fff8e1;border:1px solid #ffe082;border-radius:8px;padding:12px 18px;margin-bottom:16px;font-size:13.5px;color:#7d6608">
+    🛏️ <strong>โครงสร้างคะแนน IPD :</strong> ส่วนที่ 1 (<strong>70</strong>) + ส่วนที่ 2 (<strong>60</strong>) + ส่วนที่ 3 (<strong>30</strong>) = <strong>160 คะแนน</strong>
+  </div>
+  <!-- PART 1 -->
+  <div class="section-wrap">
+    <div class="sec-head proc">
+      <div class="sec-icon">⚙️</div>
+      <div>
+        <div style="font-size:15px;font-weight:700">ส่วนที่ 1 : แบบประเมินคุณภาพการบริหารการพยาบาลผู้ป่วยใน — มิติกระบวนการ</div>
+        <div class="sec-meta">14 ข้อประเมิน × 5 คะแนน = 70 คะแนน | ข้อบ่งชี้ : A · D · L · I</div>
+      </div>
+    </div>
+    <div class="assess-wrap"><table class="at" id="p5Tbl">
+      <thead><tr>
+        <th class="th-num">ข้อ</th><th class="th-desc">รายการประเมินและข้อกำหนด</th><th class="th-crit">ข้อบ่งชี้</th>
+        <th class="th-sc">0<div class="sc-lbl">No Evid.</div></th><th class="th-sc">1<div class="sc-lbl">Begin.</div></th>
+        <th class="th-sc">2<div class="sc-lbl">Basic.</div></th><th class="th-sc">3<div class="sc-lbl">Mature</div></th>
+        <th class="th-sc">4<div class="sc-lbl">Adv.</div></th><th class="th-sc">5<div class="sc-lbl">Role M.</div></th>
+        <th class="th-tot">รวมคะแนน<br>รายข้อ</th>
+      </tr></thead>
+      <tbody id="p5Body"></tbody>
+    </table></div>
+    <div class="sec-total"><span>คะแนนรวมส่วนที่ 1 :</span>
+      <span class="tc tc-p"><span id="p5Total">0.00</span> / 70 (<span id="p5Pct">0.0</span>%)</span></div>
+  </div>
+  <!-- PART 2 -->
+  <div class="section-wrap">
+    <div class="sec-head" style="background:linear-gradient(135deg,#1565c0,#1e88e5)">
+      <div class="sec-icon">🛏️</div>
+      <div>
+        <div style="font-size:15px;font-weight:700">ส่วนที่ 2 : แบบประเมินคุณภาพการปฏิบัติการพยาบาลผู้ป่วยใน — มิติกระบวนการ</div>
+        <div class="sec-meta">3 ระยะ × 4 ข้อ = 12 ข้อ × 5 คะแนน = 60 คะแนน | ข้อบ่งชี้ : A · D · L · I</div>
+      </div>
+    </div>
+    <div class="assess-wrap"><table class="at" id="q5Tbl">
+      <thead><tr style="background:#bbdefb">
+        <th class="th-num" style="background:#bbdefb;color:#1565c0">ข้อ</th>
+        <th class="th-desc" style="background:#bbdefb;color:#1565c0;text-align:left;padding-left:12px">รายการประเมินและข้อกำหนด</th>
+        <th class="th-crit" style="background:#bbdefb;color:#1565c0">ข้อบ่งชี้</th>
+        <th class="th-sc" style="background:#bbdefb;color:#1565c0">0</th><th class="th-sc" style="background:#bbdefb;color:#1565c0">1</th>
+        <th class="th-sc" style="background:#bbdefb;color:#1565c0">2</th><th class="th-sc" style="background:#bbdefb;color:#1565c0">3</th>
+        <th class="th-sc" style="background:#bbdefb;color:#1565c0">4</th><th class="th-sc" style="background:#bbdefb;color:#1565c0">5</th>
+        <th class="th-tot" style="background:#bbdefb;color:#1565c0">รวมคะแนน<br>รายข้อ</th>
+      </tr></thead>
+      <tbody id="q5Body"></tbody>
+    </table></div>
+    <div class="sec-total"><span>คะแนนรวมส่วนที่ 2 :</span>
+      <span class="tc" style="background:#bbdefb;color:#1565c0"><span id="q5Total">0.00</span> / 60 (<span id="q5Pct">0.0</span>%)</span></div>
+  </div>
+  <!-- PART 3 -->
+  <div class="section-wrap">
+    <div class="sec-head out">
+      <div class="sec-icon">📊</div>
+      <div>
+        <div style="font-size:15px;font-weight:700">ส่วนที่ 3 : แบบประเมินผลลัพธ์คุณภาพการบริการพยาบาลผู้ป่วยใน — มิติผลลัพธ์</div>
+        <div class="sec-meta">6 ข้อประเมิน × 5 คะแนน = 30 คะแนน | ข้อบ่งชี้ : Le · T · C · I</div>
+      </div>
+    </div>
+    <div class="assess-wrap"><table class="at out-t" id="o5Tbl">
+      <thead><tr>
+        <th class="th-num">ข้อ</th><th class="th-desc">รายการประเมินและตัวชี้วัด</th><th class="th-crit">ข้อบ่งชี้</th>
+        <th class="th-sc">0</th><th class="th-sc">1</th><th class="th-sc">2</th>
+        <th class="th-sc">3</th><th class="th-sc">4</th><th class="th-sc">5</th>
+        <th class="th-tot">รวมคะแนน<br>รายข้อ</th>
+      </tr></thead>
+      <tbody id="o5Body"></tbody>
+    </table></div>
+    <div class="sec-total"><span>คะแนนรวมส่วนที่ 3 :</span>
+      <span class="tc tc-o"><span id="o5Total">0.00</span> / 30 (<span id="o5Pct">0.0</span>%)</span></div>
+  </div>
+  <!-- GRAND TOTAL -->
+  <div class="grand-card" id="grandSection5">
+    <h2>🏆 สรุปผลการประเมินคุณภาพการบริการพยาบาลผู้ป่วยใน</h2>
+    <div class="sg">
+      <div class="sb2"><div class="sv" id="g5P1">0.00</div><div class="sm">/70 คะแนน</div><div class="sl">⚙️ ส่วนที่ 1</div></div>
+      <div class="sb2"><div class="sv" id="g5P2">0.00</div><div class="sm">/60 คะแนน</div><div class="sl">🛏️ ส่วนที่ 2</div></div>
+      <div class="sb2"><div class="sv" id="g5O">0.00</div><div class="sm">/30 คะแนน</div><div class="sl">📊 ส่วนที่ 3</div></div>
+      <div class="sb2 grand"><div class="sv" id="g5T">0.00</div><div class="sm">/160 คะแนน</div><div class="sl">⭐ คะแนนรวม</div></div>
+      <div class="sb2"><div class="sv" id="g5Pct">0.0%</div><div class="sm">(÷160×100)</div><div class="sl">📈 ร้อยละ</div></div>
+    </div>
+    <div class="prog-wrap">
+      <div class="prog-lbl"><span>0%</span><span>Beginning</span><span>Basically</span><span>Mature</span><span>Advanced</span><span>Role Model</span><span>100%</span></div>
+      <div class="prog-bg"><div class="prog-fill" id="pFill5" style="width:0%"></div></div>
+    </div>
+    <div class="ibar"><span class="ilvl" id="iLvl5">—</span><span class="itxt" id="iTxt5">กรุณากรอกแบบประเมินครบทุกข้อ แล้วกดปุ่ม "คำนวณคะแนน"</span></div>
+  </div>
+  <div class="rtbl-wrap">
+    <div class="rtbl-head">📋 ตารางสรุปคะแนนรายข้อ — IPD / ผู้ป่วยใน</div>
+    <div style="overflow-x:auto"><table class="rtbl">
+      <thead><tr><th>ข้อ</th><th>รายการประเมิน</th><th>A/Le</th><th>D/T</th><th>L/C</th><th>I</th><th>คะแนน</th><th>ระดับ</th></tr></thead>
+      <tbody id="r5Body"><tr><td colspan="8" style="text-align:center;color:#aaa;padding:20px">กรุณากดปุ่ม "คำนวณคะแนน"</td></tr></tbody>
+    </table></div>
+  </div>
 </div>
-
 <div id="m6" style="display:none">
-  <div class="cs-wrap">
-    <div class="status-badge status-soon">⏳ รอรับข้อมูลจากหนังสือเล่ม 6</div>
-    <div class="cs-ico">🦠</div>
-    <h3>มาตรฐานและการประเมินคุณภาพการบริการพยาบาลป้องกันและควบคุมการติดเชื้อในโรงพยาบาล</h3>
-    <p class="cs-std">แบบประเมินสำหรับงานป้องกันและควบคุมการติดเชื้อในโรงพยาบาล (IC) ครอบคลุมระบบ IC<br>การเฝ้าระวังการติดเชื้อ การจัดการความเสี่ยง และการปฏิบัติตามมาตรฐาน Standard Precaution</p>
-    <div class="cs-book"><span class="bk-num">เล่ม 6</span><span>มาตรฐานและการประเมินคุณภาพ<br>การบริการพยาบาลป้องกันและควบคุมการติดเชื้อฯ</span></div><br>
-    <div class="cs-info">
-      <p><strong>📚 หนังสืออ้างอิง :</strong> มาตรฐานและการประเมินคุณภาพการบริการพยาบาลป้องกันและควบคุมการติดเชื้อในโรงพยาบาล (เล่ม 6)</p>
-      <p><strong>🏥 หน่วยงานที่ใช้ :</strong> งาน IC / ทุกหน่วยงานการพยาบาล โรงพยาบาลเขาสุกิม</p>
-      <p><strong>📋 โครงสร้างการประเมิน :</strong> มิติกระบวนการ (ADLI) + มิติผลลัพธ์ (Le/T/C/I) = 100 คะแนน</p>
-      <p><strong>📌 วิธีเพิ่มโมดูลนี้ :</strong> อัปโหลดหนังสือเล่ม 6 เพื่อให้นำข้อมูลแบบประเมินมาใส่ในโปรแกรม</p>
+
+  <div class="sl-bar">
+    <span>💾 จัดการข้อมูลการประเมิน :</span>
+    <button class="sl-btn sl-save" onclick="openSaveModal('m6')">💾 บันทึกผลการประเมิน</button>
+    <button class="sl-btn sl-load" onclick="openLoadModal('m6')">📂 เรียกดู / โหลดข้อมูล</button>
+    <button class="sl-btn sl-import" onclick="openImportModal()">📥 นำเข้าไฟล์ JSON</button>
+    <div class="sl-auto"><span class="sl-dot"></span><span id="autoSaveStatus6">บันทึกอัตโนมัติทุกครั้งที่ตอบ</span></div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn b-p" onclick="calcAll6()">🔢 คำนวณคะแนน</button>
+    <button class="btn b-g" onclick="window.print()">🖨️ พิมพ์แบบประเมิน</button>
+    <button class="btn b-o" onclick="exportCSV6()">📊 ส่งออก CSV</button>
+    <button class="btn b-r" onclick="resetAll6()">🔄 เริ่มใหม่</button>
+    <button class="btn b-w" onclick="document.getElementById('grandSection6').scrollIntoView({behavior:'smooth'})">📋 ดูสรุปผล</button>
+  </div>
+
+  <div class="storage-panel" id="storagePanel6">
+    <div class="sp-head" onclick="toggleSP('6')">
+      <h3>🗄️ นโยบายการจัดเก็บข้อมูลการประเมิน — ข้อมูลเก็บที่ไหน? ใครเข้าถึงได้? แก้ไขได้หรือไม่?</h3>
+      <span class="sp-tog" id="spTog6">▼</span>
+    </div>
+    <div class="sp-body" id="spBody6">
+      <div class="sp-grid">
+        <div class="sp-card blue"><div class="sp-title">📍 เก็บข้อมูลที่ไหน?</div><ul><li><strong>localStorage</strong> บนเครื่องผู้ใช้งาน ไม่มีเซิร์ฟเวอร์กลาง</li></ul></div>
+        <div class="sp-card green"><div class="sp-title">⏳ เก็บได้นานแค่ไหน?</div><ul><li>เก็บ<strong>ถาวร</strong> จนกว่าจะลบ ⚠️ ล้าง Cache → หาย</li></ul></div>
+        <div class="sp-card yellow"><div class="sp-title">👤 ใครเข้าถึงได้?</div><ul><li><strong>เฉพาะผู้ใช้เครื่องนั้น</strong></li></ul></div>
+        <div class="sp-card red"><div class="sp-title">✏️ แก้ไขได้?</div><ul><li>โหลดกลับ → <strong>แก้ไขได้</strong> | View: read-only</li></ul></div>
+      </div>
+      <div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:8px"><span class="sp-tag local">🔒 localStorage</span><span class="sp-tag export">📤 JSON Export</span><button onclick="calcStorageUsage('6')" style="padding:4px 12px;background:var(--pry);color:#fff;border:none;border-radius:6px;font-family:inherit;font-size:12px;cursor:pointer;margin-left:auto">🔄 อัปเดตพื้นที่</button></div>
     </div>
   </div>
-</div>
 
+  <div class="card">
+    <div class="card-head">📋 ข้อมูลการประเมิน — มาตรฐานและการประเมินคุณภาพการบริการพยาบาลป้องกันและควบคุมการติดเชื้อในโรงพยาบาล</div>
+    <div class="card-body">
+      <div class="info-grid">
+        <div><label class="f-lbl">วันที่ประเมิน</label><input class="f-inp" type="date" id="aDate6"></div>
+        <div><label class="f-lbl">ปีงบประมาณ</label><input class="f-inp" type="text" id="aYear6" value="2568"></div>
+        <div><label class="f-lbl">ชื่อผู้ประเมิน</label><input class="f-inp" type="text" id="aName6" placeholder="ชื่อ-สกุล"></div>
+        <div><label class="f-lbl">ตำแหน่ง</label><input class="f-inp" type="text" id="aPos6" value="พยาบาลวิชาชีพ / ICN / ICWN"></div>
+        <div><label class="f-lbl">หน่วยงาน</label><input class="f-inp" type="text" id="aDept6" value="งานการพยาบาลป้องกันและควบคุมการติดเชื้อ โรงพยาบาลเขาสุกิม"></div>
+        <div><label class="f-lbl">ประเภทการประเมิน</label>
+          <select class="f-sel" id="aType6">
+            <option>ประเมินภายใน (Self Assessment)</option>
+            <option>ทีมประกันคุณภาพโรงพยาบาล</option>
+            <option>ทีมประกันคุณภาพระดับจังหวัด</option>
+            <option>ประเมินภายนอก</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="guide-card">
+    <div class="guide-hd" onclick="tg('gBody6','gTog6')">
+      <h3>📖 คำอธิบายวิธีการให้คะแนนและเกณฑ์การประเมิน (คลิกเพื่อแสดง/ซ่อน)</h3>
+      <span class="gtog" id="gTog6">▼</span>
+    </div>
+    <div class="guide-bd" id="gBody6">
+      <div class="guide-tabs">
+        <button class="gtab active" onclick="showGCx('gc6_1',this,'m6')">มิติกระบวนการ (ADLI)</button>
+        <button class="gtab" onclick="showGCx('gc6_2',this,'m6')">มิติผลลัพธ์ (Le/T/C/Li)</button>
+        <button class="gtab" onclick="showGCx('gc6_3',this,'m6')">วิธีคำนวณ IC</button>
+        <button class="gtab" onclick="showGCx('gc6_4',this,'m6')">การแปลผล</button>
+      </div>
+      <div id="gc6_1" class="gc show">
+        <p style="font-size:13px;color:#555;margin-bottom:10px">ให้คะแนน A, D, L, I แต่ละตัว 0–5 — คะแนนรายข้อ = min((A+D+L+I)÷4, A)</p>
+        <table class="gtbl"><thead><tr><th>คะแนน</th><th>ระดับ</th><th>A: แนวทางการปฏิบัติ</th></tr></thead><tbody>
+          <tr><td><span class="sbg" style="background:var(--s0)">0</span></td><td>No Evidence</td><td>ไม่มีแนวทางการปฏิบัติ</td></tr>
+          <tr><td><span class="sbg" style="background:var(--s1)">1</span></td><td>Beginning</td><td>มีแนวทางฯ ในเรื่องที่กำหนดเพียงบางส่วน</td></tr>
+          <tr><td><span class="sbg" style="background:var(--s2)">2</span></td><td>Basically Effectiveness</td><td>มีแนวทางฯ ในเรื่องที่กำหนดเป็นส่วนใหญ่</td></tr>
+          <tr><td><span class="sbg" style="background:var(--s3)">3</span></td><td>Mature</td><td>มีแนวทางฯ ครบถ้วนตามข้อกำหนดของมาตรฐาน</td></tr>
+          <tr><td><span class="sbg" style="background:var(--s4)">4</span></td><td>Advance</td><td>มีแนวทางฯ ครบถ้วนและมีการพัฒนาดีกว่าข้อกำหนด</td></tr>
+          <tr><td><span class="sbg" style="background:var(--s5)">5</span></td><td>Role Model</td><td>พัฒนาดีกว่าข้อกำหนดและเป็นแหล่งอ้างอิงทั้งภายในและภายนอก</td></tr>
+        </tbody></table>
+        <p style="font-size:12px;color:#888;margin-top:8px"><b>A</b>=Approach · <b>D</b>=Deployment · <b>L</b>=Learning · <b>I</b>=Integration | ถ้า A=0 คะแนนรายข้อ = 0</p>
+      </div>
+      <div id="gc6_2" class="gc">
+        <p style="font-size:13px;color:#555;margin-bottom:10px">⚠️ มิติผลลัพธ์ IC ใช้ <strong>Le, T, C, Li</strong> (ไม่ใช่ I) — คะแนนรายข้อ = min((Le+T+C+Li)÷4, Le)</p>
+        <table class="gtbl"><thead><tr><th>คะแนน</th><th>ระดับ</th><th>Le: Performance Level</th></tr></thead><tbody>
+          <tr><td><span class="sbg" style="background:var(--s0)">0</span></td><td>No Evidence</td><td>ไม่มีรายงานผลลัพธ์ด้านประสิทธิผลตามพันธกิจ</td></tr>
+          <tr><td><span class="sbg" style="background:var(--s1)">1</span></td><td>Beginning</td><td>มีรายงาน ตัวชี้วัดบางส่วน 1–20% บรรลุเป้าหมาย</td></tr>
+          <tr><td><span class="sbg" style="background:var(--s2)">2</span></td><td>Basically Effectiveness</td><td>ตัวชี้วัดส่วนน้อย 21–40% บรรลุเป้าหมาย</td></tr>
+          <tr><td><span class="sbg" style="background:var(--s3)">3</span></td><td>Mature</td><td>ตัวชี้วัดประมาณครึ่งหนึ่ง 41–60% บรรลุเป้าหมาย</td></tr>
+          <tr><td><span class="sbg" style="background:var(--s4)">4</span></td><td>Advance</td><td>ตัวชี้วัดส่วนใหญ่ 61–80% บรรลุเป้าหมาย</td></tr>
+          <tr><td><span class="sbg" style="background:var(--s5)">5</span></td><td>Role Model</td><td>ตัวชี้วัดเกือบทั้งหมด 81–100% บรรลุเป้าหมาย</td></tr>
+        </tbody></table>
+        <p style="font-size:12px;color:#888;margin-top:8px"><b>Le</b>=Level · <b>T</b>=Trend · <b>C</b>=Comparison · <b>Li</b>=Linkage | ถ้า Le=0 คะแนนรายข้อ = 0</p>
+      </div>
+      <div id="gc6_3" class="gc">
+        <div style="background:#e8f5e9;border-radius:7px;padding:13px;font-size:13.5px">
+          <p>🦠 <b>โครงสร้างคะแนน IC (เล่ม 6) รวม 130 คะแนน</b></p>
+          <ul style="margin:7px 0 0 18px;line-height:2;font-size:13px">
+            <li>ส่วนที่ 1 มิติกระบวนการบริหาร (13 ข้อ × 5) = <b>65 คะแนน</b></li>
+            <li>ส่วนที่ 2 มิติกระบวนการปฏิบัติ IC (9 ข้อ × 5) = <b>45 คะแนน</b></li>
+            <li>ส่วนที่ 3 มิติผลลัพธ์ (4 ข้อ × 5) = <b>20 คะแนน</b></li>
+            <li>กระบวนการ: <b>min((A+D+L+I)÷4, A)</b> | ผลลัพธ์: <b>min((Le+T+C+Li)÷4, Le)</b></li>
+            <li>ร้อยละ = (คะแนนรวม ÷ <b>130</b>) × 100</li>
+          </ul>
+          <p style="font-size:12px;color:#888;margin-top:8px">⚠️ โมดูลนี้รวม <b>130 คะแนน</b> (ไม่ใช่ 160) และผลลัพธ์ใช้ Li แทน I</p>
+        </div>
+      </div>
+      <div id="gc6_4" class="gc">
+        <table class="gtbl"><thead><tr><th>ร้อยละ</th><th>ระดับ</th><th>ลักษณะหน่วยงานบริการพยาบาล</th></tr></thead><tbody>
+          <tr><td>0–30</td><td><span class="lvc lv1">Beginning</span></td><td>เริ่มต้น กระบวนการยังไม่เป็นระบบ</td></tr>
+          <tr><td>30.01–40</td><td><span class="lvc lv2">Basically Effectiveness</span></td><td>ตอบสนองข้อกำหนดบางส่วน</td></tr>
+          <tr><td>40.01–50</td><td><span class="lvc lv3">Mature (ระดับ 1)</span></td><td>ตอบสนองข้อกำหนดเป็นส่วนใหญ่</td></tr>
+          <tr><td>50.01–60</td><td><span class="lvc lv3">Mature (ระดับ 2)</span></td><td>ตอบสนองข้อกำหนดอย่างครบถ้วน</td></tr>
+          <tr><td>60.01–70</td><td><span class="lvc lv4">Advanced (ระดับ 1)</span></td><td>ตอบสนองมาตรฐาน มีนวัตกรรม</td></tr>
+          <tr><td>70.01–80</td><td><span class="lvc lv4">Advanced (ระดับ 2)</span></td><td>ปฏิบัติตามมาตรฐานเป็นเลิศ</td></tr>
+          <tr><td>80.01–90</td><td><span class="lvc lv5">Role Model (ระดับ 1)</span></td><td>เหนือมาตรฐาน เป็นต้นแบบ</td></tr>
+          <tr><td>90.01–100</td><td><span class="lvc lv5">Role Model (ระดับ 2)</span></td><td>เหนือมาตรฐานอย่างโดดเด่น</td></tr>
+        </tbody></table>
+      </div>
+    </div>
+  </div>
+
+  <div style="background:#e8f5e9;border:1px solid #a5d6a7;border-radius:8px;padding:12px 18px;margin-bottom:16px;font-size:13.5px;color:#1b5e20">
+    🦠 <strong>โครงสร้างคะแนน IC :</strong> &nbsp;
+    ส่วนที่ 1 มิติกระบวนการบริหาร (<strong>65 คะแนน</strong>) &nbsp;+&nbsp;
+    ส่วนที่ 2 มิติกระบวนการปฏิบัติ IC (<strong>45 คะแนน</strong>) &nbsp;+&nbsp;
+    ส่วนที่ 3 มิติผลลัพธ์ (<strong>20 คะแนน</strong>) &nbsp;=&nbsp; รวม <strong>130 คะแนน</strong>
+    &nbsp;|&nbsp; ผลลัพธ์ใช้ <strong>Le/T/C/Li</strong>
+  </div>
+
+  <!-- PART 1: Management 13 items -->
+  <div class="section-wrap">
+    <div class="sec-head proc">
+      <div class="sec-icon">⚙️</div>
+      <div>
+        <div style="font-size:15px;font-weight:700">ส่วนที่ 1 : แบบประเมินคุณภาพการบริหารการพยาบาลป้องกันและควบคุมการติดเชื้อ — มิติกระบวนการ</div>
+        <div class="sec-meta">13 ข้อประเมิน × 5 คะแนน = 65 คะแนน &nbsp;|&nbsp; ข้อบ่งชี้ : A · D · L · I</div>
+      </div>
+    </div>
+    <div class="assess-wrap"><table class="at" id="p6Tbl">
+      <thead><tr>
+        <th class="th-num">ข้อ</th><th class="th-desc">รายการประเมินและข้อกำหนด</th><th class="th-crit">ข้อบ่งชี้</th>
+        <th class="th-sc">0<div class="sc-lbl">No Evid.</div></th><th class="th-sc">1<div class="sc-lbl">Begin.</div></th>
+        <th class="th-sc">2<div class="sc-lbl">Basic.</div></th><th class="th-sc">3<div class="sc-lbl">Mature</div></th>
+        <th class="th-sc">4<div class="sc-lbl">Adv.</div></th><th class="th-sc">5<div class="sc-lbl">Role M.</div></th>
+        <th class="th-tot">รวมคะแนน<br>รายข้อ</th>
+      </tr></thead>
+      <tbody id="p6Body"></tbody>
+    </table></div>
+    <div class="sec-total"><span>คะแนนรวมส่วนที่ 1 :</span>
+      <span class="tc tc-p"><span id="p6Total">0.00</span> / 65 &nbsp;(<span id="p6Pct">0.0</span>%)</span></div>
+  </div>
+
+  <!-- PART 2: IC Practice 9 items -->
+  <div class="section-wrap">
+    <div class="sec-head" style="background:linear-gradient(135deg,#2e7d32,#43a047)">
+      <div class="sec-icon">🦠</div>
+      <div>
+        <div style="font-size:15px;font-weight:700">ส่วนที่ 2 : แบบประเมินคุณภาพการบริการพยาบาลป้องกันและควบคุมการติดเชื้อ — มิติกระบวนการ</div>
+        <div class="sec-meta">9 ข้อประเมิน × 5 คะแนน = 45 คะแนน &nbsp;|&nbsp; ข้อบ่งชี้ : A · D · L · I</div>
+      </div>
+    </div>
+    <div class="assess-wrap"><table class="at" id="q6Tbl">
+      <thead><tr style="background:#c8e6c9">
+        <th class="th-num" style="background:#c8e6c9;color:#1b5e20">ข้อ</th>
+        <th class="th-desc" style="background:#c8e6c9;color:#1b5e20;text-align:left;padding-left:12px">รายการประเมินและข้อกำหนด</th>
+        <th class="th-crit" style="background:#c8e6c9;color:#1b5e20">ข้อบ่งชี้</th>
+        <th class="th-sc" style="background:#c8e6c9;color:#1b5e20">0</th><th class="th-sc" style="background:#c8e6c9;color:#1b5e20">1</th>
+        <th class="th-sc" style="background:#c8e6c9;color:#1b5e20">2</th><th class="th-sc" style="background:#c8e6c9;color:#1b5e20">3</th>
+        <th class="th-sc" style="background:#c8e6c9;color:#1b5e20">4</th><th class="th-sc" style="background:#c8e6c9;color:#1b5e20">5</th>
+        <th class="th-tot" style="background:#c8e6c9;color:#1b5e20">รวมคะแนน<br>รายข้อ</th>
+      </tr></thead>
+      <tbody id="q6Body"></tbody>
+    </table></div>
+    <div class="sec-total"><span>คะแนนรวมส่วนที่ 2 :</span>
+      <span class="tc" style="background:#c8e6c9;color:#1b5e20"><span id="q6Total">0.00</span> / 45 &nbsp;(<span id="q6Pct">0.0</span>%)</span></div>
+  </div>
+
+  <!-- PART 3: Outcome 4 items (Le/T/C/Li) -->
+  <div class="section-wrap">
+    <div class="sec-head out">
+      <div class="sec-icon">📊</div>
+      <div>
+        <div style="font-size:15px;font-weight:700">ส่วนที่ 3 : แบบประเมินผลลัพธ์คุณภาพการบริการพยาบาลป้องกันและควบคุมการติดเชื้อ — มิติผลลัพธ์</div>
+        <div class="sec-meta">4 ข้อประเมิน × 5 คะแนน = 20 คะแนน &nbsp;|&nbsp; ข้อบ่งชี้ : Le · T · C · <strong>Li</strong> (ไม่ใช่ I)</div>
+      </div>
+    </div>
+    <div class="assess-wrap"><table class="at out-t" id="o6Tbl">
+      <thead><tr>
+        <th class="th-num">ข้อ</th><th class="th-desc">รายการประเมินและตัวชี้วัด</th><th class="th-crit">ข้อบ่งชี้</th>
+        <th class="th-sc">0<div class="sc-lbl">No Evid.</div></th><th class="th-sc">1<div class="sc-lbl">1–20%</div></th>
+        <th class="th-sc">2<div class="sc-lbl">21–40%</div></th><th class="th-sc">3<div class="sc-lbl">41–60%</div></th>
+        <th class="th-sc">4<div class="sc-lbl">61–80%</div></th><th class="th-sc">5<div class="sc-lbl">81–100%</div></th>
+        <th class="th-tot">รวมคะแนน<br>รายข้อ</th>
+      </tr></thead>
+      <tbody id="o6Body"></tbody>
+    </table></div>
+    <div class="sec-total"><span>คะแนนรวมส่วนที่ 3 :</span>
+      <span class="tc tc-o"><span id="o6Total">0.00</span> / 20 &nbsp;(<span id="o6Pct">0.0</span>%)</span></div>
+  </div>
+
+  <!-- GRAND TOTAL -->
+  <div class="grand-card" id="grandSection6">
+    <h2>🏆 สรุปผลการประเมินคุณภาพการบริการพยาบาลป้องกันและควบคุมการติดเชื้อในโรงพยาบาล</h2>
+    <div class="sg">
+      <div class="sb2"><div class="sv" id="g6P1">0.00</div><div class="sm">/65 คะแนน</div><div class="sl">⚙️ ส่วนที่ 1 มิติกระบวนการบริหาร</div></div>
+      <div class="sb2"><div class="sv" id="g6P2">0.00</div><div class="sm">/45 คะแนน</div><div class="sl">🦠 ส่วนที่ 2 มิติกระบวนการปฏิบัติ IC</div></div>
+      <div class="sb2"><div class="sv" id="g6O">0.00</div><div class="sm">/20 คะแนน</div><div class="sl">📊 ส่วนที่ 3 มิติผลลัพธ์</div></div>
+      <div class="sb2 grand"><div class="sv" id="g6T">0.00</div><div class="sm">/130 คะแนน</div><div class="sl">⭐ คะแนนรวม</div></div>
+      <div class="sb2"><div class="sv" id="g6Pct">0.0%</div><div class="sm">(÷130×100)</div><div class="sl">📈 ร้อยละ</div></div>
+    </div>
+    <div class="prog-wrap">
+      <div class="prog-lbl"><span>0%</span><span>Beginning</span><span>Basically</span><span>Mature</span><span>Advanced</span><span>Role Model</span><span>100%</span></div>
+      <div class="prog-bg"><div class="prog-fill" id="pFill6" style="width:0%"></div></div>
+    </div>
+    <div class="ibar"><span class="ilvl" id="iLvl6">—</span><span class="itxt" id="iTxt6">กรุณากรอกแบบประเมินครบทุกข้อ แล้วกดปุ่ม "คำนวณคะแนน"</span></div>
+  </div>
+
+  <div class="rtbl-wrap">
+    <div class="rtbl-head">📋 ตารางสรุปคะแนนรายข้อ — IC / ป้องกันและควบคุมการติดเชื้อ</div>
+    <div style="overflow-x:auto"><table class="rtbl">
+      <thead><tr><th>ข้อ</th><th>รายการประเมิน</th><th>A/Le</th><th>D/T</th><th>L/C</th><th>I/Li</th><th>คะแนน</th><th>ระดับ</th></tr></thead>
+      <tbody id="r6Body"><tr><td colspan="8" style="text-align:center;color:#aaa;padding:20px">กรุณากดปุ่ม "คำนวณคะแนน" เพื่อดูผลสรุป</td></tr></tbody>
+    </table></div>
+  </div>
+
+</div>
 <div id="m7" style="display:none">
   <div class="cs-wrap">
     <div class="status-badge status-soon">⏳ รอรับข้อมูลจากหนังสือเล่ม 7</div>
@@ -2417,10 +2834,14 @@ document.addEventListener('DOMContentLoaded',()=>{
   buildTables2();
   buildTables3();
   buildTables4();
+  buildTables5();
+  buildTables6();
   document.getElementById('aDate').value=new Date().toISOString().slice(0,10);
   if(document.getElementById('aDate2'))document.getElementById('aDate2').value=new Date().toISOString().slice(0,10);
   if(document.getElementById('aDate3'))document.getElementById('aDate3').value=new Date().toISOString().slice(0,10);
   if(document.getElementById('aDate4'))document.getElementById('aDate4').value=new Date().toISOString().slice(0,10);
+  if(document.getElementById('aDate5'))document.getElementById('aDate5').value=new Date().toISOString().slice(0,10);
+  if(document.getElementById('aDate6'))document.getElementById('aDate6').value=new Date().toISOString().slice(0,10);
 });
 
 // ===============================================================
@@ -3317,7 +3738,7 @@ function openSaveModal(modId){
   else if(mid==='m3'){ let p1=0,p2=0,o=0; PI3.forEach(i=>{const s=cI3('p3',i.n,false);if(s!==null)p1+=s;}); QI3.forEach(i=>{const nk=i.n.replace('.','_');const s=cI3('q3',nk,false);if(s!==null)p2+=s;}); OI3.forEach(i=>{const s=cI3('o3',i.n,true);if(s!==null)o+=s;}); totals={pt:p1+p2,ot:o,grand:p1+p2+o,maxScore:160}; }
   const pct=(totals.grand/(totals.maxScore||100))*100;
   const interpRow=INTERP.find(x=>pct<=x.max)||INTERP[INTERP.length-1];
-  const modLabel={'m1':'การบริหารองค์กรพยาบาล','m2':'ผู้ป่วยนอก (OPD)','m3':'อุบัติเหตุและฉุกเฉิน (ER)','m4':'ผู้คลอด (LR)'}[mid]||mid;
+  const modLabel={'m1':'การบริหารองค์กรพยาบาล','m2':'ผู้ป่วยนอก (OPD)','m3':'อุบัติเหตุและฉุกเฉิน (ER)','m4':'ผู้คลอด (LR)','m5':'ผู้ป่วยใน (IPD)','m6':'ป้องกันและควบคุมการติดเชื้อ (IC)'}[mid]||mid;
   document.getElementById('savePreview').innerHTML=`
     <div style="font-size:12px;color:#888;margin-bottom:6px">โมดูล: <strong>${modLabel}</strong></div>
     <div class="sp-row"><span>คะแนนรวม</span><span><strong>${totals.grand.toFixed(2)}</strong> / ${totals.maxScore} คะแนน (${pct.toFixed(1)}%)</span></div>
@@ -3350,80 +3771,107 @@ function doSave(){
 
 // Override collectState to handle all modules
 function collectState(mid){
-  mid=mid||_activeModId;
-  const suffix=mid==='m1'?'':mid.slice(1);
+  mid=mid||_activeModId||'m1';
   const scores={};
+  const sf=mid==='m1'?'':mid.slice(1);
+  const g=(nm,cr)=>document.querySelector('input[name="'+nm+cr+'"]:checked');
+  const sv=(nm,cr)=>{const e=g(nm,'_'+cr);return e?parseFloat(e.value):null;};
   if(mid==='m1'){
-    PI.forEach(item=>{PC.forEach(c=>{const el=document.querySelector(`input[name="p${item.n}_${c}"]:checked`);scores[`p${item.n}_${c}`]=el?parseFloat(el.value):null;});});
-    OI.forEach(item=>{OC.forEach(c=>{const el=document.querySelector(`input[name="o${item.n}_${c}"]:checked`);scores[`o${item.n}_${c}`]=el?parseFloat(el.value):null;});});
+    PI.forEach(i=>{PC.forEach(c=>{scores['p'+i.n+'_'+c]=sv('p'+i.n,c);});});
+    OI.forEach(i=>{OC.forEach(c=>{scores['o'+i.n+'_'+c]=sv('o'+i.n,c);});});
   } else if(mid==='m2'){
-    PI2.forEach(item=>{PC2.forEach(c=>{const el=document.querySelector(`input[name="p2${item.n}_${c}"]:checked`);scores[`p2${item.n}_${c}`]=el?parseFloat(el.value):null;});});
-    QI2.forEach(item=>{const nk=item.n.replace('.','_');PC2.forEach(c=>{const el=document.querySelector(`input[name="q2${nk}_${c}"]:checked`);scores[`q2${nk}_${c}`]=el?parseFloat(el.value):null;});});
-    OI2.forEach(item=>{OC2.forEach(c=>{const el=document.querySelector(`input[name="o2${item.n}_${c}"]:checked`);scores[`o2${item.n}_${c}`]=el?parseFloat(el.value):null;});});
-  } else if(mid==='m4'){
-    PI4.forEach(item=>{PC4.forEach(c=>{const el=document.querySelector(`input[name="p4${item.n}_${c}"]:checked`);scores[`p4${item.n}_${c}`]=el?parseFloat(el.value):null;});});
-    QI4.forEach(item=>{const nk=item.n.replace('.','_');PC4.forEach(c=>{const el=document.querySelector(`input[name="q4${nk}_${c}"]:checked`);scores[`q4${nk}_${c}`]=el?parseFloat(el.value):null;});});
-    OI4.forEach(item=>{OC4.forEach(c=>{const el=document.querySelector(`input[name="o4${item.n}_${c}"]:checked`);scores[`o4${item.n}_${c}`]=el?parseFloat(el.value):null;});});
+    PI2.forEach(i=>{PC2.forEach(c=>{scores['p2'+i.n+'_'+c]=sv('p2'+i.n,c);});});
+    QI2.forEach(i=>{const nk=i.n.replace('.','_');PC2.forEach(c=>{scores['q2'+nk+'_'+c]=sv('q2'+nk,c);});});
+    OI2.forEach(i=>{OC2.forEach(c=>{scores['o2'+i.n+'_'+c]=sv('o2'+i.n,c);});});
   } else if(mid==='m3'){
-    PI3.forEach(item=>{PC3.forEach(c=>{const el=document.querySelector(`input[name="p3${item.n}_${c}"]:checked`);scores[`p3${item.n}_${c}`]=el?parseFloat(el.value):null;});});
-    QI3.forEach(item=>{const nk=item.n.replace('.','_');PC3.forEach(c=>{const el=document.querySelector(`input[name="q3${nk}_${c}"]:checked`);scores[`q3${nk}_${c}`]=el?parseFloat(el.value):null;});});
-    OI3.forEach(item=>{OC3.forEach(c=>{const el=document.querySelector(`input[name="o3${item.n}_${c}"]:checked`);scores[`o3${item.n}_${c}`]=el?parseFloat(el.value):null;});});
+    PI3.forEach(i=>{PC3.forEach(c=>{scores['p3'+i.n+'_'+c]=sv('p3'+i.n,c);});});
+    QI3.forEach(i=>{const nk=i.n.replace('.','_');PC3.forEach(c=>{scores['q3'+nk+'_'+c]=sv('q3'+nk,c);});});
+    OI3.forEach(i=>{OC3.forEach(c=>{scores['o3'+i.n+'_'+c]=sv('o3'+i.n,c);});});
+  } else if(mid==='m4'){
+    PI4.forEach(i=>{PC4.forEach(c=>{scores['p4'+i.n+'_'+c]=sv('p4'+i.n,c);});});
+    QI4.forEach(i=>{const nk=i.n.replace('.','_');PC4.forEach(c=>{scores['q4'+nk+'_'+c]=sv('q4'+nk,c);});});
+    OI4.forEach(i=>{OC4.forEach(c=>{scores['o4'+i.n+'_'+c]=sv('o4'+i.n,c);});});
+  } else if(mid==='m5'){
+    PI5.forEach(i=>{PC5.forEach(cr=>{scores['p5'+i.n+'_'+cr]=sv('p5'+i.n,cr);});});
+    QI5.forEach(i=>{const nk=i.n.replace('.','_');PC5.forEach(cr=>{scores['q5'+nk+'_'+cr]=sv('q5'+nk,cr);});});
+    OI5.forEach(i=>{OC5.forEach(cr=>{scores['o5'+i.n+'_'+cr]=sv('o5'+i.n,cr);});});
+  } else if(mid==='m6'){
+    PI6.forEach(i=>{PC6.forEach(cr=>{scores['p6'+i.n+'_'+cr]=sv('p6'+i.n,cr);});});
+    QI6.forEach(i=>{PC6.forEach(cr=>{scores['q6'+i.n+'_'+cr]=sv('q6'+i.n,cr);});});
+    OI6.forEach(i=>{OC6.forEach(cr=>{scores['o6'+i.n+'_'+cr]=sv('o6'+i.n,cr);});});
   }
-  const aSuf=mid==='m1'?'':mid.slice(1);
-  return {modId:mid,assessDate:(document.getElementById('aDate'+aSuf)||document.getElementById('aDate'))?.value,
-    fiscalYear:(document.getElementById('aYear'+aSuf)||document.getElementById('aYear'))?.value,
-    assessorName:(document.getElementById('aName'+aSuf)||document.getElementById('aName'))?.value,
-    assessorPos:(document.getElementById('aPos'+aSuf)||document.getElementById('aPos'))?.value,
-    dept:(document.getElementById('aDept'+aSuf)||document.getElementById('aDept'))?.value,
-    assessType:(document.getElementById('aType'+aSuf)||document.getElementById('aType'))?.value,
+  const getEl=(id)=>document.getElementById(id+sf)||document.getElementById(id);
+  return{modId:mid,
+    assessDate:getEl('aDate')?getEl('aDate').value:'',
+    fiscalYear:getEl('aYear')?getEl('aYear').value:'',
+    assessorName:getEl('aName')?getEl('aName').value:'',
+    assessorPos:getEl('aPos')?getEl('aPos').value:'',
+    dept:getEl('aDept')?getEl('aDept').value:'',
+    assessType:getEl('aType')?getEl('aType').value:'',
     scores};
 }
 
 function calcTotals(scores,mid){
   mid=mid||'m1';
-  let pt=0,ot=0;
+  let ot=0;
+  function calcBlock(PI_,QI_,OI_,pp,qp,op,PC_,OC_,maxSc){
+    let p1=0,p2=0,ot_=0;
+    PI_.forEach(function(i){
+      const vs={};let ok=true;
+      PC_.forEach(function(c){const v=scores[pp+i.n+'_'+c];if(v===null||v===undefined)ok=false;vs[c]=v;});
+      if(!ok)return;if(vs['A']===0)return;
+      p1+=Math.min(PC_.reduce(function(s,c){return s+vs[c];},0)/4,vs['A']);
+    });
+    if(QI_)QI_.forEach(function(i){
+      const nk=typeof i.n==='string'?i.n.replace('.','_'):i.n;
+      const vs={};let ok=true;
+      PC_.forEach(function(c){const v=scores[qp+nk+'_'+c];if(v===null||v===undefined)ok=false;vs[c]=v;});
+      if(!ok)return;if(vs['A']===0)return;
+      p2+=Math.min(PC_.reduce(function(s,c){return s+vs[c];},0)/4,vs['A']);
+    });
+    OI_.forEach(function(i){
+      const vs={};let ok=true;
+      OC_.forEach(function(c){const v=scores[op+i.n+'_'+c];if(v===null||v===undefined)ok=false;vs[c]=v;});
+      if(!ok)return;if(vs['Le']===0)return;
+      ot_+=Math.min(OC_.reduce(function(s,c){return s+vs[c];},0)/4,vs['Le']);
+    });
+    return{pt:parseFloat((p1+p2).toFixed(2)),ot:parseFloat(ot_.toFixed(2)),grand:parseFloat((p1+p2+ot_).toFixed(2)),maxScore:maxSc};
+  }
   if(mid==='m1'){
-    PI.forEach(i=>{const vs={};let ok=true;PC.forEach(c=>{const v=scores[`p${i.n}_${c}`];if(v===null||v===undefined)ok=false;vs[c]=v;});if(!ok)return;if(vs['A']===0)return;pt+=Math.min(PC.reduce((s,c)=>s+vs[c],0)/4,vs['A']);});
-    OI.forEach(i=>{const vs={};let ok=true;OC.forEach(c=>{const v=scores[`o${i.n}_${c}`];if(v===null||v===undefined)ok=false;vs[c]=v;});if(!ok)return;if(vs['Le']===0)return;ot+=Math.min(OC.reduce((s,c)=>s+vs[c],0)/4,vs['Le']);});
+    let pt=0;
+    PI.forEach(function(i){const vs={};let ok=true;PC.forEach(function(c){const v=scores['p'+i.n+'_'+c];if(v===null||v===undefined)ok=false;vs[c]=v;});if(!ok)return;if(vs['A']===0)return;pt+=Math.min(PC.reduce(function(s,c){return s+vs[c];},0)/4,vs['A']);});
+    OI.forEach(function(i){const vs={};let ok=true;OC.forEach(function(c){const v=scores['o'+i.n+'_'+c];if(v===null||v===undefined)ok=false;vs[c]=v;});if(!ok)return;if(vs['Le']===0)return;ot+=Math.min(OC.reduce(function(s,c){return s+vs[c];},0)/4,vs['Le']);});
     return{pt:parseFloat(pt.toFixed(2)),ot:parseFloat(ot.toFixed(2)),grand:parseFloat((pt+ot).toFixed(2)),maxScore:100};
-  } else if(mid==='m2'||mid==='m3'){
-    const PI_=mid==='m2'?PI2:PI3, QI_=mid==='m2'?QI2:QI3, OI_=mid==='m2'?OI2:OI3;
-    const pp=mid==='m2'?'p2':'p3', qp=mid==='m2'?'q2':'q3', op=mid==='m2'?'o2':'o3';
-    let p1=0,p2=0;
-    PI_.forEach(i=>{const vs={};let ok=true;PC3.forEach(c=>{const v=scores[`${pp}${i.n}_${c}`];if(v===null||v===undefined)ok=false;vs[c]=v;});if(!ok)return;if(vs['A']===0)return;p1+=Math.min(PC3.reduce((s,c)=>s+vs[c],0)/4,vs['A']);});
-    QI_.forEach(i=>{const nk=i.n.replace('.','_');const vs={};let ok=true;PC3.forEach(c=>{const v=scores[`${qp}${nk}_${c}`];if(v===null||v===undefined)ok=false;vs[c]=v;});if(!ok)return;if(vs['A']===0)return;p2+=Math.min(PC3.reduce((s,c)=>s+vs[c],0)/4,vs['A']);});
-    OI_.forEach(i=>{const vs={};let ok=true;OC3.forEach(c=>{const v=scores[`${op}${i.n}_${c}`];if(v===null||v===undefined)ok=false;vs[c]=v;});if(!ok)return;if(vs['Le']===0)return;ot+=Math.min(OC3.reduce((s,c)=>s+vs[c],0)/4,vs['Le']);});
-    return{pt:parseFloat((p1+p2).toFixed(2)),ot:parseFloat(ot.toFixed(2)),grand:parseFloat((p1+p2+ot).toFixed(2)),maxScore:160};
-  } else if(mid==='m4'){
-    const PI_=PI4,QI_=QI4,OI_=OI4,pp='p4',qp='q4',op='o4';
-    let p1=0,p2=0;
-    PI_.forEach(i=>{const vs={};let ok=true;PC4.forEach(c=>{const v=scores[`${pp}${i.n}_${c}`];if(v===null||v===undefined)ok=false;vs[c]=v;});if(!ok)return;if(vs['A']===0)return;p1+=Math.min(PC4.reduce((s,c)=>s+vs[c],0)/4,vs['A']);});
-    QI_.forEach(i=>{const nk=i.n.replace('.','_');const vs={};let ok=true;PC4.forEach(c=>{const v=scores[`${qp}${nk}_${c}`];if(v===null||v===undefined)ok=false;vs[c]=v;});if(!ok)return;if(vs['A']===0)return;p2+=Math.min(PC4.reduce((s,c)=>s+vs[c],0)/4,vs['A']);});
-    OI_.forEach(i=>{const vs={};let ok=true;OC4.forEach(c=>{const v=scores[`${op}${i.n}_${c}`];if(v===null||v===undefined)ok=false;vs[c]=v;});if(!ok)return;if(vs['Le']===0)return;ot+=Math.min(OC4.reduce((s,c)=>s+vs[c],0)/4,vs['Le']);});
-    return{pt:parseFloat((p1+p2).toFixed(2)),ot:parseFloat(ot.toFixed(2)),grand:parseFloat((p1+p2+ot).toFixed(2)),maxScore:160};
+  } else if(mid==='m2'){return calcBlock(PI2,QI2,OI2,'p2','q2','o2',PC2,OC2,160);
+  } else if(mid==='m3'){return calcBlock(PI3,QI3,OI3,'p3','q3','o3',PC3,OC3,160);
+  } else if(mid==='m4'){return calcBlock(PI4,QI4,OI4,'p4','q4','o4',PC4,OC4,160);
+  } else if(mid==='m5'){return calcBlock(PI5,QI5,OI5,'p5','q5','o5',PC5,OC5,160);
+  } else if(mid==='m6'){return calcBlock(PI6,QI6,OI6,'p6','q6','o6',PC6,OC6,130);
   }
   return{pt:0,ot:0,grand:0,maxScore:100};
 }
 
-// Apply state for all modules
 function applyState(state){
   const mid=state.modId||'m1';
-  const aSuf=mid==='m1'?'':mid.slice(1);
-  if(state.assessDate)(document.getElementById('aDate'+aSuf)||document.getElementById('aDate')).value=state.assessDate;
-  if(state.fiscalYear)(document.getElementById('aYear'+aSuf)||document.getElementById('aYear')).value=state.fiscalYear;
-  if(state.assessorName)(document.getElementById('aName'+aSuf)||document.getElementById('aName')).value=state.assessorName;
-  if(state.assessorPos)(document.getElementById('aPos'+aSuf)||document.getElementById('aPos')).value=state.assessorPos;
-  if(state.dept)(document.getElementById('aDept'+aSuf)||document.getElementById('aDept')).value=state.dept;
-  if(state.assessType)(document.getElementById('aType'+aSuf)||document.getElementById('aType')).value=state.assessType;
-  Object.entries(state.scores||{}).forEach(([name,val])=>{
+  const sf=mid==='m1'?'':mid.slice(1);
+  const setV=(id,val)=>{if(val===null||val===undefined)return;const e=document.getElementById(id+sf)||document.getElementById(id);if(e)e.value=val;};
+  setV('aDate',state.assessDate);setV('aYear',state.fiscalYear);
+  setV('aName',state.assessorName);setV('aPos',state.assessorPos);
+  setV('aDept',state.dept);
+  const at=document.getElementById('aType'+sf)||document.getElementById('aType');
+  if(at&&state.assessType)at.value=state.assessType;
+  Object.entries(state.scores||{}).forEach(function(kv){
+    const name=kv[0],val=kv[1];
     if(val===null||val===undefined)return;
-    const el=document.querySelector(`input[name="${name}"][value="${val}"]`);
+    const el=document.querySelector('input[name="'+name+'"][value="'+val+'"]');
     if(el)el.checked=true;
   });
   if(mid==='m1')onSc();
   else if(mid==='m2')onSc2();
   else if(mid==='m3')onSc3();
   else if(mid==='m4')onSc4();
+  else if(mid==='m5')onSc5();
+  else if(mid==='m6')onSc6();
 }
 
 // Override openLoadModal to show module badge
@@ -3824,6 +4272,752 @@ function exportCSV4(){
   OI4.forEach(item=>{const s=cI4('o4',item.n,true);csv+=`${item.n},"${item.t}",ส่วนที่3,${gV4('o4',item.n,'Le')??''},${gV4('o4',item.n,'T')??''},${gV4('o4',item.n,'C')??''},${gV4('o4',item.n,'I')??''},${s!==null?s.toFixed(2):''}\n`;});
   const b=new Blob([csv],{type:'text/csv;charset=utf-8;'});
   const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`KSK_LR_QA_${new Date().toISOString().slice(0,10)}.csv`;a.click();
+}
+
+
+// ============================================================
+// MODULE 5 — IPD (ผู้ป่วยใน) DATA & FUNCTIONS
+// ============================================================
+const PI5=[
+  {n:1,t:'การนำองค์กรพยาบาลผู้ป่วยใน',std:'มาตรฐาน 1-3',
+   m:'ผู้บริหารหน่วยงานบริการพยาบาลร่วมเป็นทีมการบริหารขององค์กรพยาบาลในการนำองค์กร ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การวิเคราะห์งานการพยาบาลของหน่วยงานบริการพยาบาล',
+      '2) การร่วมกำหนดขอบเขตการบริหาร วิสัยทัศน์ พันธกิจ ค่านิยม เป้าหมายการดำเนินงาน และกลไกการสื่อสารขององค์กรพยาบาล',
+      '3) การร่วมกำหนดระบบการบริหารจัดการโดยใช้หลักธรรมาภิบาล และการเสริมสร้างบรรยากาศองค์กรของหน่วยงานพยาบาล']},
+  {n:2,t:'การแสดงความรับผิดชอบต่อสังคม',std:'มาตรฐาน 4',
+   m:'งานบริการพยาบาลร่วมกับองค์กรพยาบาลในการแสดงความรับผิดชอบต่อสังคม ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การแสดงความรับผิดชอบต่อสาธารณะ',
+      '2) การดำเนินงานด้านมาตรฐานวิชาชีพ',
+      '3) การสนับสนุนและสร้างความเข้มแข็งให้กับชุมชนและสังคม']},
+  {n:3,t:'การวางแผนยุทธศาสตร์องค์กรพยาบาล',std:'มาตรฐาน 5',
+   m:'ผู้บริหารหน่วยงานบริการพยาบาลร่วมเป็นทีมการบริหารขององค์กรพยาบาลในการวางแผนยุทธศาสตร์ ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การวิเคราะห์ผลการดำเนินงานและปัจจัยที่เกี่ยวข้องกับการจัดทำยุทธศาสตร์ของหน่วยงานบริการพยาบาล',
+      '2) การกำหนดและวิเคราะห์ปัจจัยที่เกี่ยวข้องกับการจัดทำยุทธศาสตร์องค์กรพยาบาล',
+      '3) การกำหนดแผนยุทธศาสตร์ เป้าประสงค์ กิจกรรม และตัวชี้วัดสำคัญ']},
+  {n:4,t:'การแปลงยุทธศาสตร์ไปสู่การปฏิบัติ',std:'มาตรฐาน 6',
+   m:'งานบริการพยาบาลแปลงยุทธศาสตร์ไปสู่การปฏิบัติ ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การจัดทำ ติดตาม ทบทวน และการปรับปรุงแผนปฏิบัติการด้านการพัฒนาคุณภาพการพยาบาลและการพัฒนาบุคลากร',
+      '2) การสื่อสารแผนปฏิบัติการไปยังบุคลากรพยาบาลทุกระดับ',
+      '3) การกำหนดการวัด การคาดการณ์ผลการดำเนินการ และการเทียบเคียงผลการดำเนินงานด้านการพยาบาลที่สำคัญ']},
+  {n:5,t:'การเรียนรู้เกี่ยวกับผู้ใช้บริการและผู้มีส่วนได้ส่วนเสีย',std:'มาตรฐาน 7',
+   m:'งานบริการพยาบาลดำเนินการด้านการเรียนรู้เกี่ยวกับผู้ใช้บริการและผู้มีส่วนได้ส่วนเสีย ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การกำหนดกลุ่มผู้ใช้บริการและผู้มีส่วนได้ส่วนเสียที่สำคัญ กลุ่มที่ต้องการมุ่งเน้น และกลุ่มที่พึงมีหรืออาจจะเพิ่มขึ้นในอนาคต',
+      '2) การรับฟังและเรียนรู้ความต้องการและความคาดหวังของผู้ใช้บริการและผู้มีส่วนได้ส่วนเสียแต่ละกลุ่ม',
+      '3) ข้อมูลสารสนเทศเกี่ยวกับกลุ่มผู้ใช้บริการ การวิเคราะห์ การนำข้อมูลไปเรียนรู้และตอบสนองความต้องการ เพื่อการพัฒนาคุณภาพงานบริการพยาบาล']},
+  {n:6,t:'ความสัมพันธ์และความพึงพอใจของผู้ใช้บริการและผู้มีส่วนได้ส่วนเสีย',std:'มาตรฐาน 8',
+   m:'งานบริการพยาบาลดำเนินการด้านความสัมพันธ์และความพึงพอใจของผู้ใช้บริการและผู้มีส่วนได้ส่วนเสีย ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การกำหนดช่องทาง/วิธีการรับฟังข้อคิดเห็นและข้อร้องเรียน การรวบรวม การวิเคราะห์ การจัดการ การตอบกลับ และระบบการประเมินความพึงพอใจและไม่พึงพอใจ',
+      '2) ระบบการเฝ้าระวังความเสี่ยงและการตอบสนองต่ออุบัติการณ์ที่ส่งผลกระทบต่อภาพลักษณ์องค์กร',
+      '3) ระบบการให้ข้อมูลและการพิทักษ์สิทธิกลุ่มผู้ใช้บริการ']},
+  {n:7,t:'การวัดและวิเคราะห์ผลการดำเนินงาน',std:'มาตรฐาน 9',
+   m:'งานบริการพยาบาลดำเนินการด้านการวัดและวิเคราะห์ผลการดำเนินงาน ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การคัดเลือกตัวชี้วัดผลการดำเนินงานที่สำคัญ และการเลือกสารสนเทศเชิงเปรียบเทียบ',
+      '2) การเก็บรวบรวม การวิเคราะห์ และการสื่อสารผลการดำเนินงานตามตัวชี้วัดสำคัญ',
+      '3) การนำสารสนเทศไปใช้ประโยชน์ และการปรับปรุงสารสนเทศให้ทันสมัย น่าเชื่อถือ']},
+  {n:8,t:'การจัดการสารสนเทศและความรู้',std:'มาตรฐาน 10',
+   m:'งานบริการพยาบาลดำเนินการด้านการจัดการสารสนเทศและความรู้ ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) กำหนดชุดข้อมูลพื้นฐานทางการพยาบาล การบันทึก การจัดเก็บ การรายงาน การเข้าถึงอย่างปลอดภัย และการนำไปใช้ประโยชน์',
+      '2) การจัดระบบสารสนเทศทางการพยาบาลที่มีคุณลักษณะดีทั้งในภาวะปกติและฉุกเฉิน สอดรับกับนโยบายความมั่นคงปลอดภัยทางไซเบอร์และการคุ้มครองข้อมูลส่วนบุคคล',
+      '3) การใช้กระบวนการจัดการความรู้ในการสนับสนุนการบริหาร การบริการ วิชาการ และการพัฒนาคุณภาพพยาบาล']},
+  {n:9,t:'ระบบการบริหารงานบุคคล',std:'มาตรฐาน 11',
+   m:'งานบริการพยาบาลดำเนินการด้านระบบการบริหารงานบุคคล ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การกำหนดกลวิธีการบริหารงานบุคคล และการบริหารอัตรากำลังบุคลากรพยาบาล',
+      '2) ระบบการประเมินผลการปฏิบัติงานบุคลากรพยาบาล',
+      '3) ระบบการจ้างงาน การธำรงรักษา การประเมินสมรรถนะที่จำเป็น และการสืบทอดตำแหน่ง']},
+  {n:10,t:'การเรียนรู้และสร้างแรงจูงใจบุคลากรพยาบาล',std:'มาตรฐาน 12',
+   m:'งานบริการพยาบาลดำเนินการด้านการเรียนรู้และการสร้างแรงจูงใจบุคลากรพยาบาล ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การพัฒนาบุคลากรใหม่และระหว่างประจำการ',
+      '2) การสร้างแรงจูงใจและความผูกพันองค์กร',
+      '3) การพัฒนาความก้าวหน้าในงาน']},
+  {n:11,t:'ความผาสุกและความพึงพอใจของบุคลากรพยาบาล',std:'มาตรฐาน 13',
+   m:'งานบริการพยาบาลดำเนินการด้านความผาสุกและความพึงพอใจของบุคลากรพยาบาล ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การจัดสภาพแวดล้อม บรรยากาศ และความปลอดภัยในการทำงาน',
+      '2) การสนับสนุนความผาสุก แรงจูงใจ ความพึงพอใจในการทำงาน และการปกป้องสิทธิในฐานะผู้ประกอบวิชาชีพ',
+      '3) การสนับสนุนสวัสดิการ ระบบการดูแลสุขภาพบุคลากรพยาบาล และอาชีวอนามัยในการทำงาน']},
+  {n:12,t:'การจัดระบบบริการพยาบาลผู้ป่วยใน',std:'มาตรฐาน 14',
+   m:'งานบริการพยาบาลดำเนินการด้านการจัดระบบบริการพยาบาล ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) ระบบบริการพยาบาลตามกระบวนการหลักของการจัดบริการพยาบาล และการใช้กระบวนการพยาบาลในการให้บริการและบันทึกทางการพยาบาล',
+      '2) การพยาบาลตอบสนองต่อปัญหาความต้องการของผู้ใช้บริการและการพยาบาลองค์รวม',
+      '3) การสร้างนวัตกรรมทางการพยาบาล และกลไกการพัฒนาและประกันคุณภาพการพยาบาล']},
+  {n:13,t:'การจัดระบบสนับสนุนการจัดบริการพยาบาลและการพัฒนาคุณภาพการพยาบาล',std:'มาตรฐาน 15',
+   m:'งานบริการพยาบาลดำเนินการด้านการจัดระบบสนับสนุนการจัดบริการพยาบาลและการพัฒนาคุณภาพ ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) ระบบบริหารจัดการความเสี่ยง และการประสานงานระหว่างหน่วยงาน',
+      '2) จัดระบบการควบคุมต้นทุนในการจัดบริการพยาบาล',
+      '3) จัดระบบสารสนเทศทางการพยาบาล']},
+  {n:14,t:'การแสดงผลลัพธ์การดำเนินงานบริการพยาบาลผู้ป่วยในในภาพรวม',std:'มาตรฐาน 16',
+   m:'งานบริการพยาบาลแสดงผลลัพธ์การดำเนินงานบริการพยาบาลที่สะท้อนความสำเร็จในภาพรวม ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การกำหนดตัวชี้วัดผลลัพธ์ด้านการนำองค์กร ด้านประสิทธิภาพ ด้านผู้ใช้บริการ ด้านบุคลากร ด้านระบบงานและกระบวนการสำคัญ และด้านการบริการพยาบาล',
+      '2) การแสดงค่าเป้าหมาย ผลการดำเนินงานปัจจุบัน แนวโน้ม และค่าเทียบเคียง',
+      '3) การทบทวนผลลัพธ์การดำเนินงานบริการพยาบาล']}
+];
+
+const QI5=[
+  // ── ระยะรับใหม่ (Admission) ────────────────────────────────
+  {n:'1.1',t:'การประเมินสภาพผู้ใช้บริการ — ระยะรับใหม่',
+   main:'ระยะรับใหม่ (Admission) : มุ่งเน้นการคัดกรอง การประเมินสภาพผู้ป่วยอย่างครบถ้วน การวางแผนการพยาบาล และการดูแลให้ผู้ป่วยปลอดภัยตั้งแต่แรกรับ',
+   m:'การประเมินสภาพผู้ใช้บริการ: พยาบาลวิชาชีพรวบรวมข้อมูลการเจ็บป่วยและความต้องการการพยาบาลเพื่อใช้สนับสนุนการวินิจฉัย การวางแผน และการปฏิบัติการพยาบาล ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การระบุตัวผู้ป่วย',
+      '2) การประเมินภาวะสุขภาพ ความต้องการการพยาบาล และการคัดกรองความเสี่ยงที่สำคัญ',
+      '3) การประเมินภาวะสุขภาพและความต้องการการพยาบาลอย่างเป็นองค์รวม',
+      '4) การประเมินภาวะเสี่ยงจากการเจ็บป่วย ภาวะสุขภาพ สิ่งแวดล้อม และการประเมินความรู้ความเข้าใจกระบวนการรับบริการ']},
+  {n:'1.2',t:'การวินิจฉัยทางการพยาบาล การวางแผน และการปฏิบัติกิจกรรม — ระยะรับใหม่',
+   main:'ระยะรับใหม่ (Admission)',
+   m:'การวินิจฉัยทางการพยาบาล การวางแผน และการปฏิบัติกิจกรรมการพยาบาล: พยาบาลวิชาชีพจัดลำดับความสำคัญข้อวินิจฉัยทางการพยาบาล วางแผนและปฏิบัติกิจกรรมการพยาบาล ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การจำแนกประเภทผู้ป่วยที่สัมพันธ์กับการเจ็บป่วยและการประเมินสภาพผู้ใช้บริการ',
+      '2) การวินิจฉัยทางการพยาบาลและการวางแผนการพยาบาลตามลำดับความเร่งด่วน ความต้องการการพยาบาล สอดคล้องกับการประเมินสภาพผู้ใช้บริการ',
+      '3) การปฏิบัติกิจกรรมการพยาบาลอย่างเป็นองค์รวม ครอบคลุมข้อวินิจฉัยทางการพยาบาลและการวางแผนการพยาบาล',
+      '4) กิจกรรมการพยาบาลครอบคลุมการดูแลเพื่อให้ผู้ป่วยปรับตัวกับสภาพแวดล้อมใหม่ การเฝ้าระวัง การจัดการและการป้องกันความเสี่ยง การคุ้มครองภาวะสุขภาพ การสร้างเสริมสุขภาพ การให้ข้อมูล และการพิทักษ์สิทธิ']},
+  {n:'1.3',t:'การประเมินผลการปฏิบัติการพยาบาล — ระยะรับใหม่',
+   main:'ระยะรับใหม่ (Admission)',
+   m:'การประเมินผลการปฏิบัติการพยาบาล: พยาบาลวิชาชีพรวบรวมข้อมูลการเปลี่ยนแปลงของการเจ็บป่วยและความต้องการการพยาบาลเพื่อประเมินผลการปฏิบัติกิจกรรมการพยาบาล ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การประเมินผลสอดคล้องกับการเจ็บป่วย ความต้องการการพยาบาล และแนวทางปฏิบัติทางคลินิกผู้ป่วยเฉพาะโรค',
+      '2) การประเมินผลครอบคลุมข้อวินิจฉัยทางการพยาบาล การวางแผนการพยาบาล และการปฏิบัติกิจกรรมการพยาบาล',
+      '3) การประเมินผลตามเวลาที่กำหนดไว้ในกิจกรรมการพยาบาล และครอบคลุมข้อมูลจากผู้ป่วย ครอบครัว และสหวิชาชีพ',
+      '4) การใช้ข้อมูลการประเมินผลเพื่อการปรับปรุงข้อวินิจฉัยทางการพยาบาล การวางแผนการพยาบาล และการปฏิบัติกิจกรรมการพยาบาล']},
+  {n:'1.4',t:'การบันทึกทางการพยาบาล — ระยะรับใหม่',
+   main:'ระยะรับใหม่ (Admission)',
+   m:'การบันทึกทางการพยาบาล: พยาบาลวิชาชีพบันทึกทางการพยาบาลหลังเสร็จสิ้นกระบวนการพยาบาล ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การบันทึกทางการพยาบาลตามหลักกระบวนการพยาบาล และการใช้สื่อสารภายในทีมการพยาบาลและระหว่างวิชาชีพที่เกี่ยวข้อง',
+      '2) การบันทึกทางการพยาบาลกระชับ (Concise) ถูกต้อง (Correct) ครบถ้วน (Complete) สอดคล้องกับปัญหาและความต้องการการพยาบาลอย่างเป็นองค์รวม',
+      '3) การบันทึกทางการพยาบาลเป็นลายลักษณ์อักษร อ่านได้ชัดเจน และใช้เป็นหลักฐานทางกฎหมายได้ (Clear)',
+      '4) การตรวจสอบความสมบูรณ์ของบันทึกทางการพยาบาลเป็นระยะ สม่ำเสมอ และการนำผลการตรวจสอบไปปรับปรุงคุณภาพการปฏิบัติการพยาบาล']},
+  // ── ระยะดูแลผู้ป่วยใน (In-ward care) ─────────────────────
+  {n:'2.1',t:'การประเมินสภาพผู้ใช้บริการ — ระยะดูแลผู้ป่วยใน',
+   main:'ระยะดูแลผู้ป่วยใน (In-ward care) : มุ่งเน้นการปฏิบัติการพยาบาลต่อเนื่อง การเฝ้าระวัง การจัดการความเสี่ยง การสร้างเสริมสุขภาพ และการดูแลองค์รวมตลอดการรักษา',
+   m:'การประเมินสภาพผู้ใช้บริการ: พยาบาลวิชาชีพรวบรวมข้อมูลการเจ็บป่วยและความต้องการการพยาบาลเพื่อใช้สนับสนุนการวินิจฉัย การวางแผน และการปฏิบัติการพยาบาล ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การระบุตัวผู้ป่วย',
+      '2) การประเมินภาวะสุขภาพ ความต้องการการพยาบาล การเปลี่ยนแปลงของภาวะสุขภาพ และการคัดกรองความเสี่ยงที่สำคัญ',
+      '3) การประเมินภาวะสุขภาพและความต้องการการพยาบาลอย่างเป็นองค์รวม',
+      '4) การประเมินภาวะเสี่ยงจากการเจ็บป่วย ภาวะสุขภาพ การรักษา และสิ่งแวดล้อม']},
+  {n:'2.2',t:'การวินิจฉัยทางการพยาบาล การวางแผน และการปฏิบัติกิจกรรม — ระยะดูแลผู้ป่วยใน',
+   main:'ระยะดูแลผู้ป่วยใน (In-ward care)',
+   m:'การวินิจฉัยทางการพยาบาล การวางแผน และการปฏิบัติกิจกรรมการพยาบาล: พยาบาลวิชาชีพจัดลำดับความสำคัญข้อวินิจฉัยทางการพยาบาล วางแผนและปฏิบัติกิจกรรมการพยาบาล ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การจำแนกประเภทผู้ป่วยที่สัมพันธ์กับการเจ็บป่วยและการประเมินสภาพผู้ใช้บริการ',
+      '2) การวินิจฉัยทางการพยาบาลและการวางแผนการพยาบาลตามลำดับความเร่งด่วน ความต้องการการพยาบาล สอดคล้องกับการประเมินสภาพผู้ใช้บริการ',
+      '3) การปฏิบัติกิจกรรมการพยาบาลอย่างเป็นองค์รวม ครอบคลุมข้อวินิจฉัยทางการพยาบาลและการวางแผนการพยาบาล',
+      '4) กิจกรรมการพยาบาลครอบคลุมการช่วยเหลือแพทย์ในการตรวจรักษา การเฝ้าระวัง การดูแลเมื่อเกิดภาวะฉุกเฉิน การจัดการและการป้องกันความเสี่ยง การคุ้มครองภาวะสุขภาพ การสร้างเสริมสุขภาพ การให้ข้อมูล และการพิทักษ์สิทธิ']},
+  {n:'2.3',t:'การประเมินผลการปฏิบัติการพยาบาล — ระยะดูแลผู้ป่วยใน',
+   main:'ระยะดูแลผู้ป่วยใน (In-ward care)',
+   m:'การประเมินผลการปฏิบัติการพยาบาล: พยาบาลวิชาชีพรวบรวมข้อมูลการเปลี่ยนแปลงของการเจ็บป่วยและความต้องการการพยาบาลเพื่อประเมินผลการปฏิบัติกิจกรรมการพยาบาล ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การประเมินผลสอดคล้องกับการเจ็บป่วย ความต้องการการพยาบาล และแนวทางปฏิบัติทางคลินิกผู้ป่วยเฉพาะโรค',
+      '2) การประเมินผลครอบคลุมข้อวินิจฉัยทางการพยาบาล การวางแผนการพยาบาล และการปฏิบัติกิจกรรมการพยาบาล',
+      '3) การประเมินผลตามเวลาที่กำหนดไว้ในกิจกรรมการพยาบาล และครอบคลุมข้อมูลจากผู้ป่วย ครอบครัว และสหวิชาชีพ',
+      '4) การใช้ข้อมูลการประเมินผลเพื่อการปรับปรุงข้อวินิจฉัยทางการพยาบาล การวางแผนการพยาบาล และการปฏิบัติกิจกรรมการพยาบาล']},
+  {n:'2.4',t:'การบันทึกทางการพยาบาล — ระยะดูแลผู้ป่วยใน',
+   main:'ระยะดูแลผู้ป่วยใน (In-ward care)',
+   m:'การบันทึกทางการพยาบาล: พยาบาลวิชาชีพบันทึกทางการพยาบาลหลังเสร็จสิ้นกระบวนการพยาบาล ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การบันทึกทางการพยาบาลตามหลักกระบวนการพยาบาล และการใช้สื่อสารภายในทีมการพยาบาลและระหว่างวิชาชีพที่เกี่ยวข้อง',
+      '2) การบันทึกทางการพยาบาลกระชับ (Concise) ถูกต้อง (Correct) ครบถ้วน (Complete) สอดคล้องกับปัญหาและความต้องการการพยาบาลอย่างเป็นองค์รวมและสัมพันธ์กับการเจ็บป่วย',
+      '3) การบันทึกทางการพยาบาลเป็นลายลักษณ์อักษร อ่านได้ชัดเจน และใช้เป็นหลักฐานทางกฎหมายได้ (Clear)',
+      '4) การตรวจสอบความสมบูรณ์ของบันทึกทางการพยาบาลเป็นระยะ สม่ำเสมอ และการนำผลการตรวจสอบไปปรับปรุงคุณภาพการปฏิบัติการพยาบาล']},
+  // ── ระยะจำหน่าย (Discharge) ────────────────────────────────
+  {n:'3.1',t:'การประเมินสภาพผู้ใช้บริการ — ระยะจำหน่ายและการดูแลต่อเนื่อง',
+   main:'ระยะจำหน่ายและการดูแลต่อเนื่อง (Discharge) : มุ่งเน้นการเตรียมความพร้อมก่อนจำหน่าย การให้ข้อมูลดูแลตนเอง และการประสานการดูแลต่อเนื่องอย่างมีคุณภาพ',
+   m:'การประเมินสภาพผู้ใช้บริการ: พยาบาลวิชาชีพรวบรวมข้อมูลการเจ็บป่วยและความต้องการการพยาบาลเพื่อใช้สนับสนุนการวินิจฉัย การวางแผน และการปฏิบัติการพยาบาล ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การระบุตัวผู้ป่วย',
+      '2) การประเมินภาวะสุขภาพ ความพร้อมในการจำหน่าย และความต้องการการพยาบาลที่สัมพันธ์กับประเภทการจำหน่ายและการดูแลต่อเนื่อง',
+      '3) การประเมินความวิตกกังวล ความรู้ ทักษะ และปัจจัยที่เอื้อต่อการดูแลตนเองหลังจำหน่าย',
+      '4) การประเมินแหล่งประโยชน์ด้านสุขภาพและสนับสนุนสังคมของผู้ป่วยและครอบครัว']},
+  {n:'3.2',t:'การวินิจฉัยทางการพยาบาล การวางแผน และการปฏิบัติกิจกรรม — ระยะจำหน่าย',
+   main:'ระยะจำหน่ายและการดูแลต่อเนื่อง (Discharge)',
+   m:'การวินิจฉัยทางการพยาบาล การวางแผน และการปฏิบัติกิจกรรมการพยาบาล: พยาบาลวิชาชีพจัดลำดับความสำคัญข้อวินิจฉัยทางการพยาบาล วางแผนและปฏิบัติกิจกรรมการพยาบาล ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การจำแนกประเภทผู้ป่วยที่สัมพันธ์กับการเจ็บป่วย การประเมินสภาพผู้ใช้บริการ และประเภทการจำหน่ายและการดูแลต่อเนื่อง',
+      '2) การวินิจฉัยทางการพยาบาลและการวางแผนการพยาบาลตามลำดับความเร่งด่วน ความต้องการการพยาบาล และสอดคล้องกับการประเมินสภาพผู้ใช้บริการ',
+      '3) การปฏิบัติกิจกรรมการพยาบาลอย่างเป็นองค์รวม ครอบคลุมข้อวินิจฉัยทางการพยาบาลและการวางแผนการพยาบาล',
+      '4) กิจกรรมการพยาบาลครอบคลุมการเตรียมความพร้อมก่อนจำหน่าย การจัดการและการป้องกันความเสี่ยง การให้ข้อมูลดูแลตนเองหลังจำหน่าย การประสานการส่งต่อ และการพิทักษ์สิทธิ']},
+  {n:'3.3',t:'การประเมินผลการปฏิบัติการพยาบาล — ระยะจำหน่าย',
+   main:'ระยะจำหน่ายและการดูแลต่อเนื่อง (Discharge)',
+   m:'การประเมินผลการปฏิบัติการพยาบาล: พยาบาลวิชาชีพรวบรวมข้อมูลการเปลี่ยนแปลงของการเจ็บป่วยและความต้องการการพยาบาลเพื่อประเมินผลการปฏิบัติกิจกรรมการพยาบาล ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การประเมินผลสอดคล้องกับการเจ็บป่วย แนวทางปฏิบัติทางคลินิก และประเภทการจำหน่ายและการดูแลต่อเนื่อง',
+      '2) การประเมินผลครอบคลุมข้อวินิจฉัยทางการพยาบาล การวางแผนการพยาบาล และการปฏิบัติกิจกรรมการพยาบาล',
+      '3) การประเมินผลตามเวลาที่กำหนดไว้ในกิจกรรมการพยาบาล และครอบคลุมข้อมูลจากผู้ป่วย ครอบครัว และสหวิชาชีพ',
+      '4) การใช้ข้อมูลการประเมินผลเพื่อการปรับปรุงข้อวินิจฉัยทางการพยาบาล การวางแผนการพยาบาล และการปฏิบัติกิจกรรมการพยาบาล']},
+  {n:'3.4',t:'การบันทึกทางการพยาบาล — ระยะจำหน่าย',
+   main:'ระยะจำหน่ายและการดูแลต่อเนื่อง (Discharge)',
+   m:'การบันทึกทางการพยาบาล: พยาบาลวิชาชีพบันทึกทางการพยาบาลหลังเสร็จสิ้นกระบวนการพยาบาล ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การบันทึกทางการพยาบาลตามหลักกระบวนการพยาบาล และการใช้สื่อสารภายในทีมการพยาบาลและระหว่างวิชาชีพที่เกี่ยวข้อง',
+      '2) การบันทึกทางการพยาบาลกระชับ (Concise) ถูกต้อง (Correct) ครบถ้วน (Complete) สอดคล้องกับปัญหาและความต้องการการพยาบาลอย่างเป็นองค์รวม สัมพันธ์กับการเจ็บป่วยและประเภทการจำหน่าย',
+      '3) การบันทึกทางการพยาบาลเป็นลายลักษณ์อักษร อ่านได้ชัดเจน และใช้เป็นหลักฐานทางกฎหมายได้ (Clear)',
+      '4) การตรวจสอบความสมบูรณ์ของบันทึกทางการพยาบาลเป็นระยะ สม่ำเสมอ และการนำผลการตรวจสอบไปปรับปรุงคุณภาพการปฏิบัติการพยาบาล']}
+];
+
+const OI5=[
+  {n:1,t:'ผลลัพธ์ด้านการนำองค์กร',dim:'มิติที่ 1',
+   m:'เกณฑ์ชี้วัดคุณภาพการพยาบาลผู้ป่วยใน มิติที่ 1 ผลลัพธ์ด้านการนำองค์กร ดังนี้',
+   s:['1) ร้อยละของตัวชี้วัดวิสัยทัศน์ที่บรรลุเป้าหมาย',
+      '2) ร้อยละของโครงการ/กิจกรรมดำเนินการตามกระบวนการควบคุมภายในที่มีคะแนนความเสี่ยงลดลง',
+      '3) ร้อยละของบุคลากรพยาบาลที่มีผลการประเมินจริยธรรมจรรยาบรรณวิชาชีพผ่านเกณฑ์ที่กำหนด']},
+  {n:2,t:'ผลลัพธ์ด้านประสิทธิภาพ',dim:'มิติที่ 2',
+   m:'เกณฑ์ชี้วัดคุณภาพการพยาบาลผู้ป่วยใน มิติที่ 2 ผลลัพธ์ด้านประสิทธิภาพ ดังนี้',
+   s:['1) ผลิตภาพของงานการพยาบาลผู้ป่วยใน (Nursing Productivity)',
+      '2) วันนอนเฉลี่ยของผู้ป่วยใน (Average Length of Stay)',
+      '3) ร้อยละของบุคลากรพยาบาลที่มีจำนวนชั่วโมงการปฏิบัติงานเฉลี่ยมากกว่า 60 ชั่วโมงต่อสัปดาห์',
+      '4) ร้อยละของอุบัติการณ์/ความเสี่ยงทางการพยาบาลได้รับการจัดการทันเวลาตามที่กำหนด']},
+  {n:3,t:'ผลลัพธ์ด้านผู้ใช้บริการ',dim:'มิติที่ 3',
+   m:'เกณฑ์ชี้วัดคุณภาพการพยาบาลผู้ป่วยใน มิติที่ 3 ผลลัพธ์ด้านผู้ใช้บริการ ดังนี้',
+   s:['1) ร้อยละความพึงพอใจของผู้ใช้บริการต่อบริการพยาบาล',
+      '2) ร้อยละความพึงพอใจของผู้มีส่วนได้ส่วนเสียต่อหน่วยงานบริการพยาบาล',
+      '3) ร้อยละความไม่พึงพอใจของผู้ใช้บริการต่อบริการพยาบาล',
+      '4) จำนวนข้อร้องเรียนของผู้ใช้บริการเกี่ยวกับสิทธิหรือการละเมิดสิทธิผู้ใช้บริการ',
+      '5) จำนวนข้อร้องเรียนของผู้ใช้บริการเกี่ยวกับพฤติกรรมบริการของบุคลากรพยาบาล',
+      '6) จำนวนข้อร้องเรียนของผู้ใช้บริการเกี่ยวกับการละเมิดข้อมูลส่วนบุคคล',
+      '7) ร้อยละของการแก้ไขและ/หรือการตอบกลับข้อร้องเรียนของผู้ใช้บริการ']},
+  {n:4,t:'ผลลัพธ์ด้านบุคลากร',dim:'มิติที่ 4',
+   m:'เกณฑ์ชี้วัดคุณภาพการพยาบาลผู้ป่วยใน มิติที่ 4 ผลลัพธ์ด้านบุคลากร ดังนี้',
+   s:['1) ร้อยละความผูกพันของบุคลากรพยาบาล',
+      '2) ร้อยละความพึงพอใจในงานและบรรยากาศองค์กรของบุคลากรพยาบาล',
+      '3) ร้อยละการโอนย้ายและลาออกของบุคลากรพยาบาล',
+      '4) ร้อยละของบุคลากรพยาบาลมีสมรรถนะตามบทบาทหน้าที่และสมรรถนะเฉพาะตามเกณฑ์ที่กำหนด',
+      '5) ร้อยละของบุคลากรพยาบาลได้รับการอบรมฟื้นฟูทักษะการช่วยฟื้นคืนชีพขั้นพื้นฐานอย่างน้อย 1 ครั้งต่อปี',
+      '6) ร้อยละของบุคลากรพยาบาลได้รับการอบรมฟื้นฟูทักษะการช่วยฟื้นคืนชีพขั้นสูงอย่างน้อย 1 ครั้งต่อปี',
+      '7) ร้อยละของบุคลากรพยาบาลได้รับการอบรมฟื้นฟูทักษะการป้องกันและควบคุมการติดเชื้อในโรงพยาบาลอย่างน้อย 1 ครั้งต่อปี',
+      '8) ร้อยละของบุคลากรพยาบาลที่ได้รับการตรวจสุขภาพประจำปีและตามความเสี่ยงจากการทำงาน',
+      '9) ร้อยละของบุคลากรพยาบาลที่เจ็บป่วยหรือเกิดอุบัติเหตุจากการปฏิบัติงานได้รับการดูแลตามแนวทางการดูแลรักษา']},
+  {n:5,t:'ผลลัพธ์ด้านระบบงานและกระบวนการสำคัญ',dim:'มิติที่ 5',
+   m:'เกณฑ์ชี้วัดคุณภาพการพยาบาลผู้ป่วยใน มิติที่ 5 ผลลัพธ์ด้านระบบงานและกระบวนการสำคัญ ดังนี้',
+   s:['1) ร้อยละของบุคลากรพยาบาลที่ปฏิบัติตามแนวทางปฏิบัติการพยาบาล',
+      '2) ร้อยละของการบันทึกทางการพยาบาลตามเกณฑ์มาตรฐานการพยาบาลในโรงพยาบาล',
+      '3) ร้อยละของอุบัติการณ์ภัยพิบัติหรือภาวะฉุกเฉินได้รับการจัดการตามกระบวนการที่กำหนด',
+      '4) ร้อยละของฐานข้อมูลจำเป็นตามมาตรฐานการพยาบาลในโรงพยาบาลที่นำมาใช้ประโยชน์',
+      '5) ร้อยละขององค์ความรู้และ/หรือนวัตกรรมทางการพยาบาลที่พัฒนาด้วยการจัดการความรู้และนำไปใช้',
+      '6) จำนวนอุบัติการณ์ความไม่พร้อมต่อการช่วยชีวิตฉุกเฉิน',
+      '7) จำนวนอุบัติการณ์ไม่พึงประสงค์จากการบริหารจัดการยาเสพติดให้โทษประเภท 2']},
+  {n:6,t:'ผลลัพธ์ด้านการบริการพยาบาลผู้ป่วยใน',dim:'มิติที่ 6',
+   m:'เกณฑ์ชี้วัดคุณภาพการพยาบาลผู้ป่วยใน มิติที่ 6 ผลลัพธ์ด้านการบริการพยาบาล ดังนี้',
+   s:['1) อัตราการเกิดแผลกดทับในโรงพยาบาล (เป้าหมาย = 0 ต่อ 1,000 วันนอน)',
+      '2) อัตราการติดเชื้อในโรงพยาบาล (เป้าหมาย = 0 ต่อ 1,000 วันนอน)',
+      '3) อัตราการติดเชื้อตำแหน่งสำคัญในโรงพยาบาล ได้แก่ VAP, CAUTI, CLABSI (เป้าหมาย = 0)',
+      '4) ร้อยละของความคลาดเคลื่อนจากการบริหารยา/สารน้ำ ความรุนแรงระดับ E-I (เป้าหมาย = 0)',
+      '5) ร้อยละของความคลาดเคลื่อนจากการให้เลือดมีความรุนแรงระดับ E-I (เป้าหมาย = 0)',
+      '6) จำนวนอุบัติการณ์การระบุตัวผู้ป่วยผิดคน (เป้าหมาย = 0)',
+      '7) ร้อยละของการพลัดตกหกล้มมีความรุนแรงระดับ E-I (เป้าหมาย = 0)',
+      '8) อัตราการเกิดการบาดเจ็บจากการจัดท่า ผูกยึด หรือการใช้อุปกรณ์และเครื่องมือ (เป้าหมาย = 0)',
+      '9) อัตราการกลับเข้ารักษาซ้ำในโรงพยาบาลภายใน 28 วันโดยไม่ได้วางแผน (เป้าหมาย = 0)',
+      '10) อัตราการเกิดอาการเปลี่ยนแปลงของผู้ป่วยโดยไม่ได้คาดการณ์ — Unplanned ICU (เป้าหมาย = 0)',
+      '11) ร้อยละของผู้ป่วยที่มีความรู้และทักษะการจัดการสุขภาพตนเองหลังจำหน่าย',
+      '12) ร้อยละของผู้ป่วยได้รับการจัดการความปวดตามแผนการพยาบาล',
+      '13) ร้อยละของผู้ป่วยได้รับการประเมินและดูแลภาวะโภชนาการตามแผนการพยาบาล']}
+];
+
+const PC5=['A','D','L','I'],OC5=['Le','T','C','I'];
+const PB5={A:'ba',D:'bd',L:'bl',I:'bi'},OB5={Le:'ble',T:'bt',C:'bc',I:'bi'};
+const PR5={A:'ra',D:'rd',L:'rl',I:'ri'},OR5={Le:'rle',T:'rt',C:'rc',I:'ri'};
+
+function buildTables5(){
+  const p5b=document.getElementById('p5Body');if(!p5b)return;
+  PI5.forEach(item=>{
+    const hr=document.createElement('tr');hr.className='ihead';
+    hr.innerHTML=`<td colspan="10"><span class="inb">ข้อ ${item.n}</span><strong>${item.t}</strong><span class="istandard">(${item.std})</span></td>`;
+    p5b.appendChild(hr);
+    PC5.forEach((cr,ci)=>{
+      const row=document.createElement('tr');row.className=PR5[cr];
+      const desc=cr==='A'?`<span class="main-desc">${item.m}</span>`:(item.s[ci-1]?`<span class="sub-desc">${item.s[ci-1]}</span>`:'<span class="sub-desc" style="color:#bbb">—</span>');
+      row.innerHTML=`${ci===0?`<td class="cnm" rowspan="4">${item.n}</td>`:''}
+        <td class="cdesc">${desc}</td><td class="ccrit"><span class="badge ${PB5[cr]}">${cr}</span></td>
+        ${[0,1,2,3,4,5].map(v=>`<td class="csc"><label class="scl"><input type="radio" name="p5${item.n}_${cr}" value="${v}" onchange="onSc5()"><span class="sb">${v}</span></label></td>`).join('')}
+        ${ci===0?`<td class="ctot" rowspan="4"><span class="iscore" style="color:#1565c0" id="p5S${item.n}">—</span><span class="iscore-max">/5</span></td>`:''}`;
+      p5b.appendChild(row);
+    });
+  });
+  const q5b=document.getElementById('q5Body');let lastMain='';
+  QI5.forEach(item=>{
+    if(item.main!==lastMain){lastMain=item.main;
+      const mhr=document.createElement('tr');
+      mhr.innerHTML=`<td colspan="10" style="background:#90caf9;padding:9px 14px;font-weight:800;color:#0d47a1;font-size:14px;border-top:3px solid #1565c0">🛏️ ${item.main}</td>`;
+      q5b.appendChild(mhr);}
+    const hr=document.createElement('tr');
+    hr.innerHTML=`<td colspan="10" style="background:#bbdefb;padding:8px 14px;font-size:13.5px;border-top:1.5px solid #90caf9">
+      <span class="inb" style="background:#1565c0">ข้อ ${item.n}</span><strong>${item.t}</strong></td>`;
+    q5b.appendChild(hr);
+    const nk=item.n.replace('.','_');
+    PC5.forEach((cr,ci)=>{
+      const row=document.createElement('tr');row.className=PR5[cr];
+      const desc=cr==='A'?`<span class="main-desc">${item.m}</span>`:(item.s[ci-1]?`<span class="sub-desc">${item.s[ci-1]}</span>`:'<span class="sub-desc" style="color:#bbb">—</span>');
+      row.innerHTML=`${ci===0?`<td class="cnm" rowspan="4" style="color:#1565c0">${item.n}</td>`:''}
+        <td class="cdesc">${desc}</td><td class="ccrit"><span class="badge ${PB5[cr]}">${cr}</span></td>
+        ${[0,1,2,3,4,5].map(v=>`<td class="csc"><label class="scl"><input type="radio" name="q5${nk}_${cr}" value="${v}" onchange="onSc5()"><span class="sb">${v}</span></label></td>`).join('')}
+        ${ci===0?`<td class="ctot" rowspan="4"><span class="iscore" style="color:#1565c0" id="q5S${nk}">—</span><span class="iscore-max">/5</span></td>`:''}`;
+      q5b.appendChild(row);
+    });
+  });
+  const o5b=document.getElementById('o5Body');
+  OI5.forEach(item=>{
+    const hr=document.createElement('tr');hr.className='ihead o-ihead';
+    hr.innerHTML=`<td colspan="10"><span class="inb o-inb">ข้อ ${item.n}</span><strong>${item.t}</strong><span class="dim-tag">${item.dim}</span></td>`;
+    o5b.appendChild(hr);
+    OC5.forEach((cr,ci)=>{
+      const row=document.createElement('tr');row.className=OR5[cr]||'ri';
+      let desc='';
+      if(cr==='Le')desc=`<span class="main-desc">${item.m}</span>`;
+      else if(cr==='T'){const b=item.s.slice(0,3);desc=b.length?`<ul class="sub-list">${b.map(x=>`<li>${x}</li>`).join('')}</ul>`:'—';}
+      else if(cr==='C'){const b=item.s.slice(3,6);desc=b.length?`<ul class="sub-list">${b.map(x=>`<li>${x}</li>`).join('')}</ul>`:'—';}
+      else{const b=item.s.slice(6);desc=b.length?`<ul class="sub-list">${b.map(x=>`<li>${x}</li>`).join('')}</ul>`:'—';}
+      row.innerHTML=`${ci===0?`<td class="cnm o-cnm" rowspan="4">${item.n}</td>`:''}
+        <td class="cdesc">${desc}</td><td class="ccrit"><span class="badge ${OB5[cr]}">${cr}</span></td>
+        ${[0,1,2,3,4,5].map(v=>`<td class="csc"><label class="scl"><input type="radio" name="o5${item.n}_${cr}" value="${v}" onchange="onSc5()"><span class="sb">${v}</span></label></td>`).join('')}
+        ${ci===0?`<td class="ctot" rowspan="4"><span class="iscore o-iscore" id="o5S${item.n}">—</span><span class="iscore-max">/5</span></td>`:''}`;
+      o5b.appendChild(row);
+    });
+  });
+}
+
+function gV5(pf,n,cr){const el=document.querySelector(`input[name="${pf}${n}_${cr}"]:checked`);return el?parseFloat(el.value):null;}
+function cI5(pf,n,isOut){
+  const cr=isOut?OC5:PC5,anch=isOut?'Le':'A';
+  const vs={};let ok=true;
+  cr.forEach(c=>{const v=gV5(pf,n,c);if(v===null)ok=false;vs[c]=v;});
+  if(!ok)return null;if(vs[anch]===0)return 0;
+  return Math.min(cr.reduce((s,c)=>s+vs[c],0)/4,vs[anch]);
+}
+
+function onSc5(){
+  let p1=0,p2=0,o5=0;
+  PI5.forEach(item=>{const s=cI5('p5',item.n,false);const el=document.getElementById('p5S'+item.n);if(el)el.textContent=s!==null?s.toFixed(2):'—';if(s!==null)p1+=s;});
+  QI5.forEach(item=>{const nk=item.n.replace('.','_');const s=cI5('q5',nk,false);const el=document.getElementById('q5S'+nk);if(el)el.textContent=s!==null?s.toFixed(2):'—';if(s!==null)p2+=s;});
+  OI5.forEach(item=>{const s=cI5('o5',item.n,true);const el=document.getElementById('o5S'+item.n);if(el)el.textContent=s!==null?s.toFixed(2):'—';if(s!==null)o5+=s;});
+  document.getElementById('p5Total').textContent=p1.toFixed(2);document.getElementById('p5Pct').textContent=((p1/70)*100).toFixed(1);
+  document.getElementById('q5Total').textContent=p2.toFixed(2);document.getElementById('q5Pct').textContent=((p2/60)*100).toFixed(1);
+  document.getElementById('o5Total').textContent=o5.toFixed(2);document.getElementById('o5Pct').textContent=((o5/30)*100).toFixed(1);
+  const grand=p1+p2+o5,pct=(grand/160)*100;
+  document.getElementById('g5P1').textContent=p1.toFixed(2);document.getElementById('g5P2').textContent=p2.toFixed(2);
+  document.getElementById('g5O').textContent=o5.toFixed(2);document.getElementById('g5T').textContent=grand.toFixed(2);
+  document.getElementById('g5Pct').textContent=pct.toFixed(1)+'%';document.getElementById('pFill5').style.width=pct+'%';
+  const r=INTERP.find(x=>pct<=x.max)||INTERP[INTERP.length-1];
+  const l=document.getElementById('iLvl5');l.textContent=r.lvl;l.style.background=r.bg;l.style.color='#fff';
+  document.getElementById('iTxt5').textContent=r.txt;
+  try{autoSave();}catch(e){}
+}
+
+function calcAll5(){onSc5();buildResult5();document.getElementById('grandSection5').scrollIntoView({behavior:'smooth'});}
+
+function buildResult5(){
+  const rb=document.getElementById('r5Body');rb.innerHTML='';
+  // Part 1
+  const ph=rb.insertRow();ph.style.background='#d6eaf8';
+  ph.innerHTML=`<td colspan="8" style="font-weight:700;color:#1a5276;padding:9px 14px">⚙️ ส่วนที่ 1 : มิติกระบวนการบริหาร (14 ข้อ / 70 คะแนน)</td>`;
+  let p1=0;
+  PI5.forEach(item=>{
+    const s=cI5('p5',item.n,false);if(s!==null)p1+=s;
+    const vA=gV5('p5',item.n,'A'),vD=gV5('p5',item.n,'D'),vL=gV5('p5',item.n,'L'),vI=gV5('p5',item.n,'I');
+    const lv=s!==null?Math.min(Math.round(s),5):0;
+    const r=rb.insertRow();
+    r.innerHTML=`<td style="text-align:center;font-weight:700">${item.n}</td><td style="font-size:13px">${item.t}</td>
+      <td style="text-align:center">${vA!==null?vA:'—'}</td><td style="text-align:center">${vD!==null?vD:'—'}</td>
+      <td style="text-align:center">${vL!==null?vL:'—'}</td><td style="text-align:center">${vI!==null?vI:'—'}</td>
+      <td style="text-align:center;font-weight:700">${s!==null?s.toFixed(2):'—'}</td>
+      <td style="text-align:center"><span class="lvc lv${lv}">${s!==null?LN[lv]:'—'}</span></td>`;
+  });
+  const psr=rb.insertRow();psr.style.background='#eaf2fb';
+  psr.innerHTML=`<td colspan="6" style="text-align:right;font-weight:700;padding:8px 14px">รวมส่วนที่ 1</td><td style="text-align:center;font-weight:800;color:#1a5276">${p1.toFixed(2)}/70</td><td style="text-align:center;font-weight:700">${((p1/70)*100).toFixed(1)}%</td>`;
+  // Part 2
+  const qh=rb.insertRow();qh.style.background='#bbdefb';
+  qh.innerHTML=`<td colspan="8" style="font-weight:700;color:#1565c0;padding:9px 14px">🛏️ ส่วนที่ 2 : มิติกระบวนการปฏิบัติ (12 ข้อ / 60 คะแนน)</td>`;
+  let p2=0;
+  QI5.forEach(item=>{
+    const nk=item.n.replace('.','_');const s=cI5('q5',nk,false);if(s!==null)p2+=s;
+    const vA=gV5('q5',nk,'A'),vD=gV5('q5',nk,'D'),vL=gV5('q5',nk,'L'),vI=gV5('q5',nk,'I');
+    const lv=s!==null?Math.min(Math.round(s),5):0;
+    const r=rb.insertRow();
+    r.innerHTML=`<td style="text-align:center;font-weight:700">${item.n}</td><td style="font-size:12.5px">${item.t}</td>
+      <td style="text-align:center">${vA!==null?vA:'—'}</td><td style="text-align:center">${vD!==null?vD:'—'}</td>
+      <td style="text-align:center">${vL!==null?vL:'—'}</td><td style="text-align:center">${vI!==null?vI:'—'}</td>
+      <td style="text-align:center;font-weight:700">${s!==null?s.toFixed(2):'—'}</td>
+      <td style="text-align:center"><span class="lvc lv${lv}">${s!==null?LN[lv]:'—'}</span></td>`;
+  });
+  const qsr=rb.insertRow();qsr.style.background='#bbdefb';
+  qsr.innerHTML=`<td colspan="6" style="text-align:right;font-weight:700;padding:8px 14px">รวมส่วนที่ 2</td><td style="text-align:center;font-weight:800;color:#1565c0">${p2.toFixed(2)}/60</td><td style="text-align:center;font-weight:700">${((p2/60)*100).toFixed(1)}%</td>`;
+  // Part 3
+  const oh=rb.insertRow();oh.style.background='#d5f5e3';
+  oh.innerHTML=`<td colspan="8" style="font-weight:700;color:#1e5631;padding:9px 14px">📊 ส่วนที่ 3 : มิติผลลัพธ์ (6 ข้อ / 30 คะแนน)</td>`;
+  let o5=0;
+  OI5.forEach(item=>{
+    const s=cI5('o5',item.n,true);if(s!==null)o5+=s;
+    const vL=gV5('o5',item.n,'Le'),vT=gV5('o5',item.n,'T'),vC=gV5('o5',item.n,'C'),vI=gV5('o5',item.n,'I');
+    const lv=s!==null?Math.min(Math.round(s),5):0;
+    const r=rb.insertRow();
+    r.innerHTML=`<td style="text-align:center;font-weight:700">${item.n}</td><td style="font-size:13px">${item.t} (${item.dim})</td>
+      <td style="text-align:center">${vL!==null?vL:'—'}</td><td style="text-align:center">${vT!==null?vT:'—'}</td>
+      <td style="text-align:center">${vC!==null?vC:'—'}</td><td style="text-align:center">${vI!==null?vI:'—'}</td>
+      <td style="text-align:center;font-weight:700">${s!==null?s.toFixed(2):'—'}</td>
+      <td style="text-align:center"><span class="lvc lv${lv}">${s!==null?LN[lv]:'—'}</span></td>`;
+  });
+  const osr=rb.insertRow();osr.style.background='#e8f8f0';
+  osr.innerHTML=`<td colspan="6" style="text-align:right;font-weight:700;padding:8px 14px">รวมส่วนที่ 3</td><td style="text-align:center;font-weight:800;color:#1e8449">${o5.toFixed(2)}/30</td><td style="text-align:center;font-weight:700">${((o5/30)*100).toFixed(1)}%</td>`;
+  const grand=p1+p2+o5;
+  const gr=rb.insertRow();gr.style.borderTop='3px solid #1565c0';
+  gr.innerHTML=`<td colspan="6" style="text-align:right;font-weight:800;padding:11px 14px;font-size:15px;background:#bbdefb">🏆 คะแนนรวมทั้งหมด</td>
+    <td style="text-align:center;font-weight:800;font-size:15px;color:#1565c0;background:#bbdefb">${grand.toFixed(2)}/160<br><small>(${((grand/160)*100).toFixed(1)}%)</small></td>
+    <td style="text-align:center;font-weight:800;font-size:16px;background:#bbdefb">${((grand/160)*100).toFixed(1)}%</td>`;
+}
+
+function resetAll5(){
+  if(!confirm('รีเซ็ตแบบประเมิน IPD ทั้งหมด?'))return;
+  document.querySelectorAll('#m5 input[type=radio]').forEach(r=>r.checked=false);
+  document.querySelectorAll('[id^=p5S],[id^=q5S],[id^=o5S]').forEach(e=>e.textContent='—');
+  ['p5Total','q5Total','o5Total','p5Pct','q5Pct','o5Pct','g5P1','g5P2','g5O'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent='0.00';});
+  document.getElementById('g5T').textContent='0.00';document.getElementById('g5Pct').textContent='0.0%';
+  document.getElementById('pFill5').style.width='0%';
+  document.getElementById('iLvl5').textContent='—';document.getElementById('iLvl5').style.background='#ffd700';document.getElementById('iLvl5').style.color='#1a2530';
+  document.getElementById('iTxt5').textContent='กรุณากรอกแบบประเมินครบทุกข้อ แล้วกดปุ่ม "คำนวณคะแนน"';
+  document.getElementById('r5Body').innerHTML='<tr><td colspan="8" style="text-align:center;color:#aaa;padding:20px">กรุณากดปุ่ม "คำนวณคะแนน" เพื่อดูผลสรุป</td></tr>';
+}
+
+function exportCSV5(){
+  let csv='\ufeffข้อ,รายการประเมิน,ส่วน,A/Le,D/T,L/C,I,คะแนนข้อ\n';
+  PI5.forEach(item=>{const s=cI5('p5',item.n,false);csv+=`${item.n},"${item.t}",ส่วนที่1,${gV5('p5',item.n,'A')??''},${gV5('p5',item.n,'D')??''},${gV5('p5',item.n,'L')??''},${gV5('p5',item.n,'I')??''},${s!==null?s.toFixed(2):''}\n`;});
+  QI5.forEach(item=>{const nk=item.n.replace('.','_');const s=cI5('q5',nk,false);csv+=`${item.n},"${item.t}",ส่วนที่2,${gV5('q5',nk,'A')??''},${gV5('q5',nk,'D')??''},${gV5('q5',nk,'L')??''},${gV5('q5',nk,'I')??''},${s!==null?s.toFixed(2):''}\n`;});
+  OI5.forEach(item=>{const s=cI5('o5',item.n,true);csv+=`${item.n},"${item.t}",ส่วนที่3,${gV5('o5',item.n,'Le')??''},${gV5('o5',item.n,'T')??''},${gV5('o5',item.n,'C')??''},${gV5('o5',item.n,'I')??''},${s!==null?s.toFixed(2):''}\n`;});
+  const b=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`KSK_IPD_QA_${new Date().toISOString().slice(0,10)}.csv`;a.click();
+}
+
+
+// ============================================================
+// MODULE 6 — IC (ป้องกันและควบคุมการติดเชื้อ) DATA & FUNCTIONS
+// KEY DIFFERENCES vs M2-M5:
+//   - Part1: 13 items (65 pts), Part2: 9 items (45 pts), Part3: 4 items (20 pts)
+//   - Total: 130 pts (not 160)
+//   - Outcome criteria: Le, T, C, Li (NOT I — uses Li = Linkage)
+// ============================================================
+const PI6=[
+  {n:1,t:'การนำองค์กรพยาบาลป้องกันและควบคุมการติดเชื้อ',std:'มาตรฐาน 1-3',
+   m:'ผู้บริหารหน่วยงานบริการพยาบาลร่วมเป็นทีมการบริหารขององค์กรพยาบาลในการนำองค์กร ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การวิเคราะห์งานการพยาบาลของหน่วยงานบริการพยาบาล',
+      '2) การร่วมกำหนดขอบเขตการบริหาร วิสัยทัศน์ พันธกิจ ค่านิยม เป้าหมายการดำเนินงาน และกลไกการสื่อสารขององค์กรพยาบาล',
+      '3) การร่วมกำหนดระบบการบริหารจัดการโดยใช้หลักธรรมาภิบาล และการเสริมสร้างบรรยากาศองค์กรของหน่วยงานพยาบาล']},
+  {n:2,t:'การแสดงความรับผิดชอบต่อสังคม',std:'มาตรฐาน 4',
+   m:'งานบริการพยาบาลร่วมกับองค์กรพยาบาลในการแสดงความรับผิดชอบต่อสังคม ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การแสดงความรับผิดชอบต่อสาธารณะ',
+      '2) การดำเนินงานด้านมาตรฐานวิชาชีพ',
+      '3) การสนับสนุนและสร้างความเข้มแข็งให้กับชุมชนและสังคม']},
+  {n:3,t:'การวางแผนยุทธศาสตร์องค์กรพยาบาล',std:'มาตรฐาน 5',
+   m:'ผู้บริหารหน่วยงานบริการพยาบาลร่วมเป็นทีมการบริหารขององค์กรพยาบาลในการวางแผนยุทธศาสตร์ ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การวิเคราะห์ผลการดำเนินงานและปัจจัยที่เกี่ยวข้องกับการจัดทำยุทธศาสตร์ของหน่วยงานบริการพยาบาล',
+      '2) การกำหนดและวิเคราะห์ปัจจัยที่เกี่ยวข้องกับการจัดทำยุทธศาสตร์องค์กรพยาบาล',
+      '3) การกำหนดแผนยุทธศาสตร์ เป้าประสงค์ กิจกรรม และตัวชี้วัดสำคัญ']},
+  {n:4,t:'การแปลงยุทธศาสตร์ไปสู่การปฏิบัติ',std:'มาตรฐาน 6',
+   m:'งานบริการพยาบาลแปลงยุทธศาสตร์ไปสู่การปฏิบัติ ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การจัดทำ ติดตาม ทบทวน และปรับปรุงแผนปฏิบัติการด้านการพัฒนาคุณภาพการพยาบาลและการพัฒนาบุคลากร',
+      '2) การสื่อสารแผนปฏิบัติการไปยังบุคลากรพยาบาลทุกระดับ',
+      '3) การกำหนดการวัด การคาดการณ์ผลการดำเนินการ และการเทียบเคียงผลการดำเนินงานด้านการพยาบาลที่สำคัญ']},
+  {n:5,t:'การเรียนรู้เกี่ยวกับผู้ใช้บริการและผู้มีส่วนได้ส่วนเสีย',std:'มาตรฐาน 7',
+   m:'งานบริการพยาบาลดำเนินการด้านการเรียนรู้เกี่ยวกับผู้ใช้บริการและผู้มีส่วนได้ส่วนเสีย ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การกำหนดกลุ่มผู้ใช้บริการและผู้มีส่วนได้ส่วนเสียที่สำคัญ',
+      '2) การรับฟังและเรียนรู้ความต้องการและความคาดหวังของผู้ใช้บริการและผู้มีส่วนได้ส่วนเสียแต่ละกลุ่ม',
+      '3) ข้อมูลสารสนเทศเกี่ยวกับกลุ่มผู้ใช้บริการ การวิเคราะห์ การนำข้อมูลไปเรียนรู้และตอบสนองความต้องการ']},
+  {n:6,t:'ความสัมพันธ์และความพึงพอใจของผู้ใช้บริการและผู้มีส่วนได้ส่วนเสีย',std:'มาตรฐาน 8',
+   m:'งานบริการพยาบาลดำเนินการด้านความสัมพันธ์และความพึงพอใจของผู้ใช้บริการและผู้มีส่วนได้ส่วนเสีย ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การกำหนดช่องทาง/วิธีการรับฟังข้อคิดเห็นและข้อร้องเรียน การรวบรวม การวิเคราะห์ การจัดการ การตอบกลับ และระบบการประเมินความพึงพอใจและไม่พึงพอใจ',
+      '2) ระบบการเฝ้าระวังความเสี่ยงและการตอบสนองต่ออุบัติการณ์ที่ส่งผลกระทบต่อภาพลักษณ์องค์กร',
+      '3) ระบบการให้ข้อมูลและการพิทักษ์สิทธิกลุ่มผู้ใช้บริการ']},
+  {n:7,t:'การวัดและวิเคราะห์ผลการดำเนินงาน',std:'มาตรฐาน 9',
+   m:'งานบริการพยาบาลดำเนินการด้านการวัดและวิเคราะห์ผลการดำเนินงาน ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การคัดเลือกตัวชี้วัดผลการดำเนินงานที่สำคัญ และการเลือกสารสนเทศเชิงเปรียบเทียบ',
+      '2) การเก็บรวบรวม การวิเคราะห์ และการสื่อสารผลการดำเนินงานตามตัวชี้วัดสำคัญ',
+      '3) การนำสารสนเทศไปใช้ประโยชน์ และการปรับปรุงสารสนเทศให้ทันสมัย น่าเชื่อถือ']},
+  {n:8,t:'การจัดการสารสนเทศและความรู้',std:'มาตรฐาน 10',
+   m:'งานบริการพยาบาลดำเนินการด้านการจัดการสารสนเทศและความรู้ ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) กำหนดชุดข้อมูลพื้นฐานทางการพยาบาล การบันทึก การจัดเก็บ การรายงาน การเข้าถึงอย่างปลอดภัย และการนำไปใช้ประโยชน์',
+      '2) การจัดระบบสารสนเทศทางการพยาบาลที่มีคุณลักษณะดีทั้งในภาวะปกติและฉุกเฉิน สอดรับกับนโยบายความมั่นคงปลอดภัยทางไซเบอร์',
+      '3) การใช้กระบวนการจัดการความรู้ในการสนับสนุนการบริหาร การบริการ วิชาการ และการพัฒนาคุณภาพพยาบาล']},
+  {n:9,t:'ระบบการบริหารงานบุคคล',std:'มาตรฐาน 11',
+   m:'งานบริการพยาบาลดำเนินการด้านระบบการบริหารงานบุคคล ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การกำหนดกลวิธีการบริหารงานบุคคล และการบริหารอัตรากำลังบุคลากรพยาบาล',
+      '2) ระบบการประเมินผลการปฏิบัติงานบุคลากรพยาบาล',
+      '3) ระบบการจ้างงาน การธำรงรักษา การประเมินสมรรถนะที่จำเป็น และการสืบทอดตำแหน่ง']},
+  {n:10,t:'การเรียนรู้และสร้างแรงจูงใจบุคลากรพยาบาล',std:'มาตรฐาน 12',
+   m:'งานบริการพยาบาลดำเนินการด้านการเรียนรู้และการสร้างแรงจูงใจบุคลากรพยาบาล ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การพัฒนาบุคลากรใหม่และระหว่างประจำการ',
+      '2) การสร้างแรงจูงใจและความผูกพันองค์กร',
+      '3) การพัฒนาความก้าวหน้าในงาน']},
+  {n:11,t:'ความผาสุกและความพึงพอใจของบุคลากรพยาบาล',std:'มาตรฐาน 13',
+   m:'งานบริการพยาบาลดำเนินการด้านความผาสุกและความพึงพอใจของบุคลากรพยาบาล ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การจัดสภาพแวดล้อม บรรยากาศ และความปลอดภัยในการทำงาน',
+      '2) การสนับสนุนความผาสุก แรงจูงใจ ความพึงพอใจในการทำงาน และการปกป้องสิทธิในฐานะผู้ประกอบวิชาชีพ',
+      '3) การสนับสนุนสวัสดิการ ระบบการดูแลสุขภาพบุคลากรพยาบาล และอาชีวอนามัยในการทำงาน']},
+  {n:12,t:'การจัดระบบบริการพยาบาลป้องกันและควบคุมการติดเชื้อ',std:'มาตรฐาน 14',
+   m:'งานบริการพยาบาลดำเนินการด้านการจัดระบบบริการพยาบาลป้องกันและควบคุมการติดเชื้อ ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) ระบบบริการพยาบาลป้องกันและควบคุมการติดเชื้อตามกระบวนการหลักของการจัดบริการพยาบาล',
+      '2) การพยาบาลตอบสนองต่อปัญหาความต้องการของผู้ใช้บริการและการพยาบาลองค์รวม',
+      '3) การสร้างนวัตกรรมทางการพยาบาล และกลไกการพัฒนาและประกันคุณภาพการพยาบาล']},
+  {n:13,t:'การจัดระบบสนับสนุนการจัดบริการพยาบาลและการพัฒนาคุณภาพการพยาบาลป้องกันและควบคุมการติดเชื้อ',std:'มาตรฐาน 15',
+   m:'งานบริการพยาบาลดำเนินการด้านการจัดระบบสนับสนุนการจัดบริการพยาบาลและการพัฒนาคุณภาพ ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) ระบบบริหารจัดการความเสี่ยงด้านการป้องกันและควบคุมการติดเชื้อ และการประสานงานระหว่างหน่วยงาน',
+      '2) จัดระบบการควบคุมต้นทุนในการจัดบริการพยาบาลป้องกันและควบคุมการติดเชื้อ',
+      '3) จัดระบบสารสนเทศด้านการป้องกันและควบคุมการติดเชื้อทางการพยาบาล']}
+];
+
+// Part 2: IC-specific practice items 14-22
+const QI6=[
+  {n:14,t:'การบริหารจัดการและติดตามกำกับระบบงานป้องกันและควบคุมการติดเชื้อในโรงพยาบาล',
+   m:'งานบริการพยาบาลดำเนินการบริหารจัดการและติดตามกำกับระบบงานป้องกันและควบคุมการติดเชื้อในโรงพยาบาล ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การจัดทำแผนงาน/โครงการป้องกันและควบคุมการติดเชื้อในโรงพยาบาล และการกำหนดนโยบาย แนวทางปฏิบัติด้านการป้องกันและควบคุมการติดเชื้อในโรงพยาบาล',
+      '2) การติดตามกำกับการปฏิบัติตามนโยบาย แนวทางปฏิบัติด้านการป้องกันและควบคุมการติดเชื้อของบุคลากรในโรงพยาบาล',
+      '3) การรายงานและนำเสนอผลการดำเนินงานด้านการป้องกันและควบคุมการติดเชื้อในโรงพยาบาลต่อคณะกรรมการป้องกันและควบคุมการติดเชื้อในโรงพยาบาล']},
+  {n:15,t:'การดำเนินการและติดตามกำกับระบบการเฝ้าระวังการติดเชื้อในโรงพยาบาล',
+   m:'งานบริการพยาบาลดำเนินการและติดตามกำกับระบบการเฝ้าระวังการติดเชื้อในโรงพยาบาล ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การกำหนดเป้าหมาย วิธีการเฝ้าระวัง และการรวบรวมข้อมูลการติดเชื้อในโรงพยาบาล',
+      '2) การวิเคราะห์ข้อมูลการเฝ้าระวังการติดเชื้อในโรงพยาบาล และการรายงานผลต่อผู้เกี่ยวข้อง',
+      '3) การนำผลการเฝ้าระวังไปใช้ในการวางแผนและพัฒนาระบบการป้องกันและควบคุมการติดเชื้อในโรงพยาบาล']},
+  {n:16,t:'การสอบสวนและควบคุมการระบาดของการติดเชื้อในโรงพยาบาล/โรคติดเชื้อรุนแรง',
+   m:'งานบริการพยาบาลดำเนินการสอบสวนและควบคุมการระบาดของการติดเชื้อในโรงพยาบาล/โรคติดเชื้อรุนแรง ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การมีระบบและแนวทางปฏิบัติในการสอบสวนและควบคุมการระบาดของการติดเชื้อในโรงพยาบาล',
+      '2) การดำเนินการสอบสวนโรค วิเคราะห์สาเหตุ และกำหนดมาตรการควบคุมการระบาด',
+      '3) การรายงานผลการสอบสวนและติดตามผลการควบคุมการระบาดต่อคณะกรรมการฯ และหน่วยงานที่เกี่ยวข้อง']},
+  {n:17,t:'การพัฒนาความรู้ ทักษะและให้คำแนะนำ/ปรึกษาแก่บุคลากรทางการพยาบาลด้านการป้องกันและควบคุมการติดเชื้อในโรงพยาบาล',
+   m:'งานบริการพยาบาลดำเนินการพัฒนาความรู้ ทักษะและให้คำแนะนำ/ปรึกษาแก่บุคลากรทางการพยาบาลด้านการป้องกันและควบคุมการติดเชื้อ ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การจัดโปรแกรมการพัฒนาความรู้ ทักษะด้านการป้องกันและควบคุมการติดเชื้อในโรงพยาบาลแก่บุคลากรพยาบาลทุกระดับ',
+      '2) การให้คำแนะนำ ปรึกษาด้านการป้องกันและควบคุมการติดเชื้อแก่บุคลากรพยาบาลในหน่วยงานต่างๆ',
+      '3) การประเมินผลการพัฒนาความรู้ ทักษะด้านการป้องกันและควบคุมการติดเชื้อของบุคลากรพยาบาล']},
+  {n:18,t:'การดูแลต่อเนื่องเพื่อความปลอดภัยของผู้ใช้บริการด้านการป้องกันและควบคุมการติดเชื้อ',
+   m:'งานบริการพยาบาลดำเนินการดูแลต่อเนื่องเพื่อความปลอดภัยของผู้ใช้บริการด้านการป้องกันและควบคุมการติดเชื้อ ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การประสานความร่วมมือกับทีมสหสาขาวิชาชีพในการดูแลผู้ป่วยที่มีความเสี่ยงต่อการติดเชื้อ หรือมีการติดเชื้อในโรงพยาบาล',
+      '2) การติดตามผลการดูแลผู้ป่วยที่มีการติดเชื้อในโรงพยาบาล เพื่อประเมินประสิทธิผลของการดูแล',
+      '3) การประสานการส่งต่อผู้ป่วยที่มีการติดเชื้อในโรงพยาบาลระหว่างหน่วยงาน']},
+  {n:19,t:'การคุ้มครองภาวะสุขภาพ เพื่อความปลอดภัยจากการติดเชื้อของผู้ป่วย บุคลากร และผู้มาเยือน',
+   m:'งานบริการพยาบาลดำเนินการคุ้มครองภาวะสุขภาพ เพื่อความปลอดภัยจากการติดเชื้อของผู้ป่วย บุคลากร และผู้มาเยือน ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การดำเนินงานด้านสุขอนามัยของบุคลากร ได้แก่ การล้างมือ การใช้อุปกรณ์ป้องกันส่วนบุคคล (PPE) และการฉีดวัคซีน',
+      '2) การดำเนินงานด้านความสะอาดและฆ่าเชื้อสิ่งแวดล้อม อุปกรณ์ และเครื่องมือทางการแพทย์',
+      '3) การดำเนินงานด้านการจัดการขยะ น้ำเสีย และการกำจัดของเสียที่ปนเปื้อนเชื้อโรค']},
+  {n:20,t:'การให้ข้อมูลและความรู้ด้านสุขภาพ เพื่อส่งเสริมการดูแลสุขภาพตนเองด้านการป้องกันและควบคุมการติดเชื้อ',
+   m:'งานบริการพยาบาลดำเนินการให้ข้อมูลและความรู้ด้านสุขภาพ เพื่อส่งเสริมการดูแลสุขภาพตนเองด้านการป้องกันและควบคุมการติดเชื้อ ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การให้ข้อมูล ความรู้ และคำแนะนำแก่ผู้ป่วยและครอบครัวเกี่ยวกับการป้องกันและควบคุมการติดเชื้อ',
+      '2) การจัดทำสื่อ/เอกสารให้ความรู้ด้านการป้องกันและควบคุมการติดเชื้อสำหรับผู้ป่วยและประชาชน',
+      '3) การประเมินความเข้าใจและพฤติกรรมการดูแลตนเองด้านการป้องกันการติดเชื้อของผู้ป่วยและครอบครัว']},
+  {n:21,t:'การพิทักษ์สิทธิผู้ป่วยเพื่อปกป้องผู้ป่วยให้ได้รับการบริการที่ปลอดภัยด้านการป้องกันและควบคุมการติดเชื้อ',
+   m:'งานบริการพยาบาลดำเนินการพิทักษ์สิทธิผู้ป่วยเพื่อปกป้องผู้ป่วยให้ได้รับการบริการที่ปลอดภัยด้านการป้องกันและควบคุมการติดเชื้อ ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การปฏิบัติตามระเบียบและแนวทางปฏิบัติด้านการป้องกันและควบคุมการติดเชื้อเพื่อปกป้องสิทธิผู้ป่วย',
+      '2) การรายงานและติดตามกรณีที่ผู้ป่วยมีความเสี่ยงหรือเกิดการติดเชื้อในโรงพยาบาล',
+      '3) การให้ข้อมูลผู้ป่วยและครอบครัวเกี่ยวกับความเสี่ยงและสิทธิการรับรู้ข้อมูลด้านการติดเชื้อในโรงพยาบาล']},
+  {n:22,t:'การบันทึกทางการพยาบาลเพื่อสื่อสารกับทีมพยาบาลและทีมสหสาขาวิชาชีพด้านการป้องกันและควบคุมการติดเชื้อ',
+   m:'งานบริการพยาบาลดำเนินการบันทึกทางการพยาบาลเพื่อสื่อสารกับทีมพยาบาลและทีมสหสาขาวิชาชีพ ครบถ้วนตามข้อกำหนดของมาตรฐาน ต่อไปนี้',
+   s:['1) การบันทึกข้อมูลการเฝ้าระวังการติดเชื้อในโรงพยาบาล และรายงานการติดเชื้อในโรงพยาบาล',
+      '2) การบันทึกผลการเยี่ยมตรวจและให้คำปรึกษาด้านการป้องกันและควบคุมการติดเชื้อแก่หน่วยงานต่างๆ',
+      '3) การบันทึกผลการสอบสวนโรคระบาด การดำเนินงาน และการติดตามผล',
+      '4) การบันทึกข้อมูลด้านสุขภาพของบุคลากรพยาบาลที่เกี่ยวกับการป้องกันและควบคุมการติดเชื้อ',
+      '5) การบันทึกที่ครบถ้วนตามแบบบันทึกมาตรฐาน 4C (Complete, Concise, Clear, Correct)']}
+];
+
+// Part 3: Outcome items 23-26 using Le, T, C, Li (NOT I)
+const OI6=[
+  {n:23,t:'ผลลัพธ์ด้านประสิทธิผลตามพันธกิจ',dim:'มิติที่ 1',
+   m:'เกณฑ์ชี้วัดคุณภาพการพยาบาลป้องกันและควบคุมการติดเชื้อ มิติที่ 1 ผลลัพธ์ด้านประสิทธิผลตามพันธกิจ ดังนี้',
+   s:['1) อัตราการติดเชื้อในโรงพยาบาล (Healthcare-Associated Infections: HAI) ลดลง',
+      '2) อัตราการติดเชื้อตำแหน่งสำคัญลดลง ได้แก่ VAP, CAUTI, CLABSI, SSI',
+      '3) ร้อยละของบุคลากรพยาบาลที่ปฏิบัติตามมาตรการป้องกันและควบคุมการติดเชื้อตามเกณฑ์ที่กำหนด',
+      '4) ร้อยละของหน่วยงานที่ผ่านเกณฑ์การประเมินด้านการป้องกันและควบคุมการติดเชื้อ',
+      '5) จำนวนการระบาดของโรคติดเชื้อในโรงพยาบาลที่สามารถควบคุมได้ภายในระยะเวลาที่กำหนด',
+      '(หมายเหตุ: สามารถเพิ่มตัวชี้วัดอื่นๆ ด้านประสิทธิผลตามพันธกิจได้)']},
+  {n:24,t:'ผลลัพธ์ด้านคุณภาพการบริการพยาบาลป้องกันและควบคุมการติดเชื้อ',dim:'มิติที่ 2',
+   m:'เกณฑ์ชี้วัดคุณภาพการพยาบาลป้องกันและควบคุมการติดเชื้อ มิติที่ 2 ผลลัพธ์ด้านคุณภาพการบริการพยาบาล ดังนี้',
+   s:['1) ร้อยละของการล้างมือถูกวิธีและถูกเวลาตามหลัก 5 Moments (WHO)',
+      '2) ร้อยละของบุคลากรพยาบาลที่ใช้ PPE ถูกต้องตามประเภทของงาน',
+      '3) ร้อยละความพึงพอใจของผู้รับบริการต่อระบบการป้องกันและควบคุมการติดเชื้อ',
+      '4) ร้อยละของผู้ป่วยที่มีความเข้าใจและปฏิบัติตามมาตรการป้องกันการแพร่กระจายเชื้อ',
+      '5) ร้อยละของการรายงานอุบัติการณ์ด้านการป้องกันและควบคุมการติดเชื้อที่ครบถ้วน ทันเวลา',
+      '(หมายเหตุ: สามารถเพิ่มตัวชี้วัดอื่นๆ ด้านคุณภาพการบริการได้)']},
+  {n:25,t:'ผลลัพธ์ด้านประสิทธิภาพของการปฏิบัติการพยาบาลป้องกันและควบคุมการติดเชื้อ',dim:'มิติที่ 3',
+   m:'เกณฑ์ชี้วัดคุณภาพการพยาบาลป้องกันและควบคุมการติดเชื้อ มิติที่ 3 ผลลัพธ์ด้านประสิทธิภาพ ดังนี้',
+   s:['1) ร้อยละของการดำเนินงานตามแผนป้องกันและควบคุมการติดเชื้อประจำปี',
+      '2) ร้อยละของบุคลากรพยาบาลที่ผ่านการอบรมด้านการป้องกันและควบคุมการติดเชื้อตามเกณฑ์ที่กำหนด',
+      '3) อัตราส่วนจำนวนพยาบาลควบคุมการติดเชื้อต่อเตียงผู้ป่วย (ICN Ratio)',
+      '4) ต้นทุนการดูแลผู้ป่วยที่ติดเชื้อในโรงพยาบาลลดลง',
+      '5) ระยะเวลาเฉลี่ยในการสอบสวนโรคระบาดตั้งแต่พบจนสรุปผล',
+      '(หมายเหตุ: สามารถเพิ่มตัวชี้วัดอื่นๆ ด้านประสิทธิภาพได้)']},
+  {n:26,t:'ผลลัพธ์ด้านการพัฒนาองค์กรการพยาบาลป้องกันและควบคุมการติดเชื้อ',dim:'มิติที่ 4',
+   m:'เกณฑ์ชี้วัดคุณภาพการพยาบาลป้องกันและควบคุมการติดเชื้อ มิติที่ 4 ผลลัพธ์ด้านการพัฒนาองค์กร ดังนี้',
+   s:['1) ร้อยละความผูกพันและพึงพอใจของบุคลากรพยาบาลในงานป้องกันและควบคุมการติดเชื้อ',
+      '2) จำนวนผลงานวิจัย/R2R/นวัตกรรมด้านการป้องกันและควบคุมการติดเชื้อที่ดำเนินการสำเร็จ',
+      '3) ร้อยละของแนวทางปฏิบัติด้านการป้องกันและควบคุมการติดเชื้อที่ได้รับการทบทวนและปรับปรุงตามเกณฑ์',
+      '4) ระดับการรับรองมาตรฐานด้านการป้องกันและควบคุมการติดเชื้อจากหน่วยงานภายนอก',
+      '5) จำนวนบุคลากรพยาบาลที่ผ่านการรับรองสมรรถนะด้านการป้องกันและควบคุมการติดเชื้อ',
+      '(หมายเหตุ: สามารถเพิ่มตัวชี้วัดอื่นๆ ด้านการพัฒนาองค์กรได้)']}
+];
+
+// IC uses ADLI for process and Le,T,C,Li for outcome (Li = Linkage, NOT I = Integration)
+const PC6=['A','D','L','I'];
+const OC6=['Le','T','C','Li'];  // NOTE: Li not I
+const PB6={A:'ba',D:'bd',L:'bl',I:'bi'};
+const OB6={Le:'ble',T:'bt',C:'bc',Li:'bli'};
+const PR6={A:'ra',D:'rd',L:'rl',I:'ri'};
+const OR6={Le:'rle',T:'rt',C:'rc',Li:'rli'};
+
+// CSS for Li badge (similar to bi but distinct)
+function buildTables6(){
+  const p6b=document.getElementById('p6Body');if(!p6b)return;
+  // Part 1 (items 1-13)
+  PI6.forEach(item=>{
+    const hr=document.createElement('tr');hr.className='ihead';
+    hr.innerHTML=`<td colspan="10"><span class="inb" style="background:#2e7d32">ข้อ ${item.n}</span><strong>${item.t}</strong><span class="istandard">(${item.std})</span></td>`;
+    p6b.appendChild(hr);
+    PC6.forEach((cr,ci)=>{
+      const row=document.createElement('tr');row.className=PR6[cr];
+      const desc=cr==='A'?`<span class="main-desc">${item.m}</span>`:(item.s[ci-1]?`<span class="sub-desc">${item.s[ci-1]}</span>`:'<span class="sub-desc" style="color:#bbb">—</span>');
+      row.innerHTML=`${ci===0?`<td class="cnm" rowspan="4">${item.n}</td>`:''}
+        <td class="cdesc">${desc}</td><td class="ccrit"><span class="badge ${PB6[cr]}">${cr}</span></td>
+        ${[0,1,2,3,4,5].map(v=>`<td class="csc"><label class="scl"><input type="radio" name="p6${item.n}_${cr}" value="${v}" onchange="onSc6()"><span class="sb">${v}</span></label></td>`).join('')}
+        ${ci===0?`<td class="ctot" rowspan="4"><span class="iscore" style="color:#2e7d32" id="p6S${item.n}">—</span><span class="iscore-max">/5</span></td>`:''}`;
+      p6b.appendChild(row);
+    });
+  });
+  // Part 2 (items 14-22)
+  const q6b=document.getElementById('q6Body');
+  QI6.forEach(item=>{
+    const hr=document.createElement('tr');
+    hr.innerHTML=`<td colspan="10" style="background:#c8e6c9;padding:8px 14px;font-size:13.5px;border-top:2px solid #4caf50">
+      <span class="inb" style="background:#2e7d32">ข้อ ${item.n}</span><strong>${item.t}</strong></td>`;
+    q6b.appendChild(hr);
+    PC6.forEach((cr,ci)=>{
+      const row=document.createElement('tr');row.className=PR6[cr];
+      const desc=cr==='A'?`<span class="main-desc">${item.m}</span>`:(item.s[ci-1]?`<span class="sub-desc">${item.s[ci-1]}</span>`:'<span class="sub-desc" style="color:#bbb">—</span>');
+      row.innerHTML=`${ci===0?`<td class="cnm" rowspan="4" style="color:#2e7d32">${item.n}</td>`:''}
+        <td class="cdesc">${desc}</td><td class="ccrit"><span class="badge ${PB6[cr]}">${cr}</span></td>
+        ${[0,1,2,3,4,5].map(v=>`<td class="csc"><label class="scl"><input type="radio" name="q6${item.n}_${cr}" value="${v}" onchange="onSc6()"><span class="sb">${v}</span></label></td>`).join('')}
+        ${ci===0?`<td class="ctot" rowspan="4"><span class="iscore" style="color:#2e7d32" id="q6S${item.n}">—</span><span class="iscore-max">/5</span></td>`:''}`;
+      q6b.appendChild(row);
+    });
+  });
+  // Part 3 (items 23-26, Le/T/C/Li)
+  const o6b=document.getElementById('o6Body');
+  OI6.forEach(item=>{
+    const hr=document.createElement('tr');hr.className='ihead o-ihead';
+    hr.innerHTML=`<td colspan="10"><span class="inb o-inb">ข้อ ${item.n}</span><strong>${item.t}</strong><span class="dim-tag">${item.dim}</span></td>`;
+    o6b.appendChild(hr);
+    OC6.forEach((cr,ci)=>{
+      const row=document.createElement('tr');row.className=OR6[cr]||'ri';
+      let desc='';
+      if(cr==='Le')desc=`<span class="main-desc">${item.m}</span>`;
+      else if(cr==='T'){const b=item.s.slice(0,2);desc=b.length?`<ul class="sub-list">${b.map(x=>`<li>${x}</li>`).join('')}</ul>`:'—';}
+      else if(cr==='C'){const b=item.s.slice(2,4);desc=b.length?`<ul class="sub-list">${b.map(x=>`<li>${x}</li>`).join('')}</ul>`:'—';}
+      else{const b=item.s.slice(4);desc=b.length?`<ul class="sub-list">${b.map(x=>`<li>${x}</li>`).join('')}</ul>`:'—';}
+      // Li badge style
+      const badge_style=cr==='Li'?'style="background:#6a1b9a;color:#fff"':'';
+      row.innerHTML=`${ci===0?`<td class="cnm o-cnm" rowspan="4">${item.n}</td>`:''}
+        <td class="cdesc">${desc}</td><td class="ccrit"><span class="badge" ${badge_style}>${cr}</span></td>
+        ${[0,1,2,3,4,5].map(v=>`<td class="csc"><label class="scl"><input type="radio" name="o6${item.n}_${cr}" value="${v}" onchange="onSc6()"><span class="sb">${v}</span></label></td>`).join('')}
+        ${ci===0?`<td class="ctot" rowspan="4"><span class="iscore o-iscore" id="o6S${item.n}">—</span><span class="iscore-max">/5</span></td>`:''}`;
+      o6b.appendChild(row);
+    });
+  });
+}
+
+function gV6(pf,n,cr){const el=document.querySelector(`input[name="${pf}${n}_${cr}"]:checked`);return el?parseFloat(el.value):null;}
+function cI6(pf,n,isOut){
+  const cr=isOut?OC6:PC6;
+  const anch=isOut?'Le':'A';
+  const vs={};let ok=true;
+  cr.forEach(c=>{const v=gV6(pf,n,c);if(v===null)ok=false;vs[c]=v;});
+  if(!ok)return null;
+  if(vs[anch]===0)return 0;
+  return Math.min(cr.reduce((s,c)=>s+vs[c],0)/4,vs[anch]);
+}
+
+function onSc6(){
+  let p1=0,p2=0,o6=0;
+  PI6.forEach(item=>{const s=cI6('p6',item.n,false);const el=document.getElementById('p6S'+item.n);if(el)el.textContent=s!==null?s.toFixed(2):'—';if(s!==null)p1+=s;});
+  QI6.forEach(item=>{const s=cI6('q6',item.n,false);const el=document.getElementById('q6S'+item.n);if(el)el.textContent=s!==null?s.toFixed(2):'—';if(s!==null)p2+=s;});
+  OI6.forEach(item=>{const s=cI6('o6',item.n,true);const el=document.getElementById('o6S'+item.n);if(el)el.textContent=s!==null?s.toFixed(2):'—';if(s!==null)o6+=s;});
+  document.getElementById('p6Total').textContent=p1.toFixed(2);
+  document.getElementById('p6Pct').textContent=((p1/65)*100).toFixed(1);
+  document.getElementById('q6Total').textContent=p2.toFixed(2);
+  document.getElementById('q6Pct').textContent=((p2/45)*100).toFixed(1);
+  document.getElementById('o6Total').textContent=o6.toFixed(2);
+  document.getElementById('o6Pct').textContent=((o6/20)*100).toFixed(1);
+  const grand=p1+p2+o6,pct=(grand/130)*100;
+  document.getElementById('g6P1').textContent=p1.toFixed(2);
+  document.getElementById('g6P2').textContent=p2.toFixed(2);
+  document.getElementById('g6O').textContent=o6.toFixed(2);
+  document.getElementById('g6T').textContent=grand.toFixed(2);
+  document.getElementById('g6Pct').textContent=pct.toFixed(1)+'%';
+  document.getElementById('pFill6').style.width=pct+'%';
+  const r=INTERP.find(x=>pct<=x.max)||INTERP[INTERP.length-1];
+  const l=document.getElementById('iLvl6');l.textContent=r.lvl;l.style.background=r.bg;l.style.color='#fff';
+  document.getElementById('iTxt6').textContent=r.txt;
+  try{autoSave();}catch(e){}
+}
+
+function calcAll6(){onSc6();buildResult6();document.getElementById('grandSection6').scrollIntoView({behavior:'smooth'});}
+
+function buildResult6(){
+  const rb=document.getElementById('r6Body');rb.innerHTML='';
+  // Part 1
+  const ph=rb.insertRow();ph.style.background='#e8f5e9';
+  ph.innerHTML=`<td colspan="8" style="font-weight:700;color:#1b5e20;padding:9px 14px">⚙️ ส่วนที่ 1 : มิติกระบวนการบริหาร (13 ข้อ / 65 คะแนน)</td>`;
+  let p1=0;
+  PI6.forEach(item=>{
+    const s=cI6('p6',item.n,false);if(s!==null)p1+=s;
+    const vA=gV6('p6',item.n,'A'),vD=gV6('p6',item.n,'D'),vL=gV6('p6',item.n,'L'),vI=gV6('p6',item.n,'I');
+    const lv=s!==null?Math.min(Math.round(s),5):0;
+    const r=rb.insertRow();
+    r.innerHTML=`<td style="text-align:center;font-weight:700">${item.n}</td><td style="font-size:13px">${item.t}</td>
+      <td style="text-align:center">${vA!==null?vA:'—'}</td><td style="text-align:center">${vD!==null?vD:'—'}</td>
+      <td style="text-align:center">${vL!==null?vL:'—'}</td><td style="text-align:center">${vI!==null?vI:'—'}</td>
+      <td style="text-align:center;font-weight:700">${s!==null?s.toFixed(2):'—'}</td>
+      <td style="text-align:center"><span class="lvc lv${lv}">${s!==null?LN[lv]:'—'}</span></td>`;
+  });
+  const psr=rb.insertRow();psr.style.background='#e8f5e9';
+  psr.innerHTML=`<td colspan="6" style="text-align:right;font-weight:700;padding:8px 14px">รวมส่วนที่ 1</td><td style="text-align:center;font-weight:800;color:#1b5e20">${p1.toFixed(2)}/65</td><td style="text-align:center;font-weight:700">${((p1/65)*100).toFixed(1)}%</td>`;
+  // Part 2
+  const qh=rb.insertRow();qh.style.background='#c8e6c9';
+  qh.innerHTML=`<td colspan="8" style="font-weight:700;color:#1b5e20;padding:9px 14px">🦠 ส่วนที่ 2 : มิติกระบวนการปฏิบัติ IC (9 ข้อ / 45 คะแนน)</td>`;
+  let p2=0;
+  QI6.forEach(item=>{
+    const s=cI6('q6',item.n,false);if(s!==null)p2+=s;
+    const vA=gV6('q6',item.n,'A'),vD=gV6('q6',item.n,'D'),vL=gV6('q6',item.n,'L'),vI=gV6('q6',item.n,'I');
+    const lv=s!==null?Math.min(Math.round(s),5):0;
+    const r=rb.insertRow();
+    r.innerHTML=`<td style="text-align:center;font-weight:700">${item.n}</td><td style="font-size:12.5px">${item.t}</td>
+      <td style="text-align:center">${vA!==null?vA:'—'}</td><td style="text-align:center">${vD!==null?vD:'—'}</td>
+      <td style="text-align:center">${vL!==null?vL:'—'}</td><td style="text-align:center">${vI!==null?vI:'—'}</td>
+      <td style="text-align:center;font-weight:700">${s!==null?s.toFixed(2):'—'}</td>
+      <td style="text-align:center"><span class="lvc lv${lv}">${s!==null?LN[lv]:'—'}</span></td>`;
+  });
+  const qsr=rb.insertRow();qsr.style.background='#c8e6c9';
+  qsr.innerHTML=`<td colspan="6" style="text-align:right;font-weight:700;padding:8px 14px">รวมส่วนที่ 2</td><td style="text-align:center;font-weight:800;color:#2e7d32">${p2.toFixed(2)}/45</td><td style="text-align:center;font-weight:700">${((p2/45)*100).toFixed(1)}%</td>`;
+  // Part 3
+  const oh=rb.insertRow();oh.style.background='#d5f5e3';
+  oh.innerHTML=`<td colspan="8" style="font-weight:700;color:#1e5631;padding:9px 14px">📊 ส่วนที่ 3 : มิติผลลัพธ์ Le/T/C/Li (4 ข้อ / 20 คะแนน)</td>`;
+  let o6=0;
+  OI6.forEach(item=>{
+    const s=cI6('o6',item.n,true);if(s!==null)o6+=s;
+    const vL=gV6('o6',item.n,'Le'),vT=gV6('o6',item.n,'T'),vC=gV6('o6',item.n,'C'),vLi=gV6('o6',item.n,'Li');
+    const lv=s!==null?Math.min(Math.round(s),5):0;
+    const r=rb.insertRow();
+    r.innerHTML=`<td style="text-align:center;font-weight:700">${item.n}</td><td style="font-size:13px">${item.t} (${item.dim})</td>
+      <td style="text-align:center">${vL!==null?vL:'—'}</td><td style="text-align:center">${vT!==null?vT:'—'}</td>
+      <td style="text-align:center">${vC!==null?vC:'—'}</td><td style="text-align:center">${vLi!==null?vLi:'—'}</td>
+      <td style="text-align:center;font-weight:700">${s!==null?s.toFixed(2):'—'}</td>
+      <td style="text-align:center"><span class="lvc lv${lv}">${s!==null?LN[lv]:'—'}</span></td>`;
+  });
+  const osr=rb.insertRow();osr.style.background='#e8f8f0';
+  osr.innerHTML=`<td colspan="6" style="text-align:right;font-weight:700;padding:8px 14px">รวมส่วนที่ 3</td><td style="text-align:center;font-weight:800;color:#1e8449">${o6.toFixed(2)}/20</td><td style="text-align:center;font-weight:700">${((o6/20)*100).toFixed(1)}%</td>`;
+  const grand=p1+p2+o6;
+  const gr=rb.insertRow();gr.style.borderTop='3px solid #2e7d32';
+  gr.innerHTML=`<td colspan="6" style="text-align:right;font-weight:800;padding:11px 14px;font-size:15px;background:#e8f5e9">🏆 คะแนนรวมทั้งหมด</td>
+    <td style="text-align:center;font-weight:800;font-size:15px;color:#2e7d32;background:#e8f5e9">${grand.toFixed(2)}/130<br><small>(${((grand/130)*100).toFixed(1)}%)</small></td>
+    <td style="text-align:center;font-weight:800;font-size:16px;background:#e8f5e9">${((grand/130)*100).toFixed(1)}%</td>`;
+}
+
+function resetAll6(){
+  if(!confirm('รีเซ็ตแบบประเมิน IC ทั้งหมด?'))return;
+  document.querySelectorAll('#m6 input[type=radio]').forEach(r=>r.checked=false);
+  document.querySelectorAll('[id^=p6S],[id^=q6S],[id^=o6S]').forEach(e=>e.textContent='—');
+  ['p6Total','q6Total','o6Total','p6Pct','q6Pct','o6Pct','g6P1','g6P2','g6O'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent='0.00';});
+  document.getElementById('g6T').textContent='0.00';
+  document.getElementById('g6Pct').textContent='0.0%';
+  document.getElementById('pFill6').style.width='0%';
+  document.getElementById('iLvl6').textContent='—';
+  document.getElementById('iTxt6').textContent='กรุณากรอกแบบประเมินครบทุกข้อ แล้วกดปุ่ม "คำนวณคะแนน"';
+  document.getElementById('r6Body').innerHTML='<tr><td colspan="8" style="text-align:center;color:#aaa;padding:20px">กรุณากดปุ่ม "คำนวณคะแนน" เพื่อดูผลสรุป</td></tr>';
+}
+
+function exportCSV6(){
+  let csv='\ufeffข้อ,รายการประเมิน,ส่วน,A/Le,D/T,L/C,I/Li,คะแนนข้อ\n';
+  PI6.forEach(item=>{const s=cI6('p6',item.n,false);csv+=`${item.n},"${item.t}",ส่วนที่1,${gV6('p6',item.n,'A')??''},${gV6('p6',item.n,'D')??''},${gV6('p6',item.n,'L')??''},${gV6('p6',item.n,'I')??''},${s!==null?s.toFixed(2):''}\n`;});
+  QI6.forEach(item=>{const s=cI6('q6',item.n,false);csv+=`${item.n},"${item.t}",ส่วนที่2-ICPractice,${gV6('q6',item.n,'A')??''},${gV6('q6',item.n,'D')??''},${gV6('q6',item.n,'L')??''},${gV6('q6',item.n,'I')??''},${s!==null?s.toFixed(2):''}\n`;});
+  OI6.forEach(item=>{const s=cI6('o6',item.n,true);csv+=`${item.n},"${item.t}",ส่วนที่3-ผลลัพธ์,${gV6('o6',item.n,'Le')??''},${gV6('o6',item.n,'T')??''},${gV6('o6',item.n,'C')??''},${gV6('o6',item.n,'Li')??''},${s!==null?s.toFixed(2):''}\n`;});
+  const b=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`KSK_IC_QA_${new Date().toISOString().slice(0,10)}.csv`;a.click();
 }
 
 </script>
